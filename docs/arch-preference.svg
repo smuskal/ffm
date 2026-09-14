@@ -490,8 +490,8 @@ Q 253.5 92.4, 254.6 92.4
 <line x1="70" y1="452" x2="1110" y2="452" stroke="#d8dee6" stroke-width="2"/>
 <text x="590.0" y="492" text-anchor="middle" font-size="16" fill="#5b6570">The model is given only the two structures and the target sequence. It never sees a measured value.</text>
 <text x="590.0" y="546" text-anchor="middle" font-size="27" font-weight="700" fill="#17181c">EP300 prefers <tspan fill="#1d6f42">Inobrodib</tspan></text>
-<text x="590.0" y="580" text-anchor="middle" font-size="18" fill="#17181c">probability <tspan font-weight="700" fill="#1d6f42">0.790</tspan>  &#183;  strength <tspan font-weight="700" fill="#1d6f42">0.790</tspan></text>
+<text x="590.0" y="580" text-anchor="middle" font-size="18" fill="#17181c">strength <tspan font-weight="700" fill="#1d6f42">0.79</tspan></text>
 <text x="590.0" y="612" text-anchor="middle" font-size="15" fill="#17181c">Correct. Inobrodib is active at a concentration 4.62 log units lower than Molibresib here.</text>
-<text x="590.0" y="656" text-anchor="middle" font-size="13.5" fill="#5b6570">Held out: neither compound appeared anywhere in the training set. Accuracy in this strength band is 0.919 on 11,435 comparisons.</text>
+<text x="590.0" y="656" text-anchor="middle" font-size="13.5" fill="#5b6570">Held out: neither compound appeared anywhere in the training set. Accuracy in this strength band is 0.92 on 11,435 comparisons.</text>
 <text x="590.0" y="678" text-anchor="middle" font-size="12.5" fill="#5b6570">Family Foundation Model, preference comparator. ChEMBL 37. familyfoundationmodel.com</text>
 </svg>

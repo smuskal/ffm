@@ -2,8 +2,8 @@
 
 **Two pairwise comparators over a roster spanning 34 protein families across
 the two models.**
-Neither predicts a value. Each answers one two-class question and returns a
-preference probability.
+Each answers one two-class question, which of the two things given is
+preferred, and attaches one number to the answer: its strength.
 
 ![The two models side by side: preference on the left, one target and two
 compounds; target preference on the right, one compound and two targets from
@@ -22,8 +22,9 @@ compound to take there. Comparing two targets against one compound is what
 medicinal chemistry calls **selectivity**, and the word is kept for that
 literature rather than used as the name of either model here.
 
-Each answer is one probability, and **the probability is its own confidence**:
-the further it sits from 0.5, the more often it turns out right. Every figure
+Each answer is an ordering with one number attached, its strength, from 0.5 to
+1.0, and **the strength is its own confidence**: the further it sits from 0.5,
+the more often it turns out right. Every figure
 below is printed with the measured accuracy of its strength band.
 
 **Project home: <https://familyfoundationmodel.com>** - both models in a browser
@@ -70,8 +71,8 @@ mechanistic class. p300 carries two family labels, reader and writer: its
 acetyltransferase domain writes acetyl marks onto lysines and its bromodomain
 reads marks already there, so one protein does both jobs. Both readings are
 Kd, so the comparison is endpoint matched: pKd
-**4.149** against **8.77**. The model answers
-**0.790** for Inobrodib, the measured order, and neither
+**4.15** against **8.77**. The model prefers
+**Inobrodib at strength 0.79**, the measured order, and neither
 compound appeared anywhere in training.
 
 ```
@@ -97,7 +98,7 @@ during fitting.
 
 | | |
 |---|---|
-| **Accuracy** | **0.710** on 65,725 held-out comparisons over 43,961 compounds |
+| **Accuracy** | **0.71** on 65,725 held-out comparisons over 43,961 compounds |
 | Targets servable | 2,079 across 32 protein families |
 | Training comparisons | 1,827,578 over 474,708 compounds and 2,077 targets |
 | Row layout | ligand, sequence, ligand, 2,556 columns |
@@ -109,10 +110,10 @@ entirely, because some compounds simply read lower everywhere.
 
 | what is being asked | accuracy |
 |---|---|
-| **the model** | **0.710** |
-| the same forest with the **target removed** | 0.665 |
-| always pick the heavier compound, the size trap | 0.569 |
-| majority, which the swap fixes at a coin flip | 0.500 |
+| **the model** | **0.71** |
+| the same forest with the **target removed** | 0.66 |
+| always pick the heavier compound, the size trap | 0.57 |
+| majority, which the swap fixes at a coin flip | 0.50 |
 
 The obvious compound-history baseline, each compound's mean pActivity across
 every target it was measured at, is a **lookup rather than a baseline**: the
@@ -125,26 +126,26 @@ two structures and the target sequence.
 
 | strength gate | comparisons both can answer | the model | the history baseline |
 |---|---|---|---|
-| answer everything | 25,374 | **0.696** | 0.672 |
-| 0.60 | 9,961 | **0.834** | 0.724 |
-| 0.70 | 3,771 | **0.914** | 0.784 |
-| 0.80 | 1,195 | **0.963** | 0.829 |
-| 0.90 | 270 | **0.993** | 0.874 |
+| answer everything | 25,374 | **0.70** | 0.67 |
+| 0.60 | 9,961 | **0.83** | 0.72 |
+| 0.70 | 3,771 | **0.91** | 0.78 |
+| 0.80 | 1,195 | **0.96** | 0.83 |
+| 0.90 | 270 | **0.99** | 0.87 |
 
 ### Accuracy rises with prediction strength
 
-![Accuracy rises from 0.710 answering everything to
-0.985 at a strength cutoff of 0.90, while the share of
+![Accuracy rises from 0.71 answering everything to
+0.98 at a strength cutoff of 0.90, while the share of
 comparisons still answered falls from 100 percent to
 1.2%.](docs/strength-tradeoff-preference.svg)
 
 | strength at or above | comparisons kept | share of the held-out set | accuracy |
 |---|---|---|---|
-| answer everything | 65,725 | 100.0% | 0.710 |
-| 0.60 | 28,097 | 42.8% | 0.844 |
-| 0.70 | 11,435 | 17.4% | 0.919 |
-| 0.80 | 3,995 | 6.1% | 0.961 |
-| 0.90 | 794 | 1.2% | 0.985 |
+| answer everything | 65,725 | 100.0% | 0.71 |
+| 0.60 | 28,097 | 42.8% | 0.84 |
+| 0.70 | 11,435 | 17.4% | 0.92 |
+| 0.80 | 3,995 | 6.1% | 0.96 |
+| 0.90 | 794 | 1.2% | 0.98 |
 
 **0.80 is the sensible default.** Show strength beside every prediction and read
 it with the accuracy of its band, never on its own.
@@ -164,37 +165,37 @@ is on the site, with a control that moves the gate:
 
 | family | held out | accuracy, no gate | n at 0.80 | accuracy at 0.80 |
 |---|---|---|---|---|
-| Kinase | 9,585 | 0.688 | 497 | 0.958 |
-| Family A G protein-coupled receptor | 7,266 | 0.719 | 485 | 0.930 |
-| Protease | 3,160 | 0.712 | 276 | 0.953 |
-| Transferase | 2,517 | 0.712 | 187 | 0.952 |
-| Electrochemical transporter | 2,306 | 0.668 | 105 | 0.924 |
-| Hydrolase | 2,069 | 0.700 | 116 | 0.948 |
-| Fatty acid binding protein family | 2,019 | 0.687 | - | - |
-| Reader | 2,012 | 0.719 | 190 | 0.958 |
-| Other ion channel | 1,993 | 0.752 | 243 | 0.979 |
-| Ligand-gated ion channel | 1,977 | 0.686 | 77 | 0.974 |
-| Eraser | 1,974 | 0.720 | 88 | 0.966 |
-| Ligase | 1,952 | 0.732 | 95 | 0.968 |
-| Phosphatase | 1,944 | 0.749 | 118 | 1.000 |
-| Writer | 1,931 | 0.795 | 174 | 0.989 |
-| Oxidoreductase | 1,918 | 0.721 | 157 | 0.955 |
-| Isomerase | 1,914 | 0.732 | 217 | 0.977 |
-| Lyase | 1,893 | 0.730 | 110 | 0.991 |
-| Toll-like and Il-1 receptors | 1,880 | 0.695 | 30 | 1.000 |
-| Nuclear receptor | 1,871 | 0.718 | 89 | 0.989 |
-| Phosphodiesterase | 1,829 | 0.718 | 76 | 0.987 |
-| Cytochrome P450 | 1,785 | 0.696 | - | - |
-| Primary active transporter | 1,781 | 0.685 | 75 | 1.000 |
-| Voltage-gated ion channel | 1,773 | 0.714 | 110 | 0.973 |
-| Family C G protein-coupled receptor | 1,751 | 0.697 | 83 | 0.988 |
-| Family B G protein-coupled receptor | 1,727 | 0.745 | 316 | 0.937 |
-| Aminoacyltransferase | 960 | 0.663 | - | - |
-| Frizzled family G protein-coupled receptor | 515 | 0.742 | - | - |
-| Taste family G protein-coupled receptor | 474 | 0.593 | - | - |
-| Calcium channel auxiliary subunit alpha2delta family | 434 | 0.624 | - | - |
-| Transmembrane 1-electron transfer carriers | 367 | 0.730 | - | - |
-| Group translocator | 148 | 0.723 | - | - |
+| Kinase | 9,585 | 0.69 | 497 | 0.96 |
+| Family A G protein-coupled receptor | 7,266 | 0.72 | 485 | 0.93 |
+| Protease | 3,160 | 0.71 | 276 | 0.95 |
+| Transferase | 2,517 | 0.71 | 187 | 0.95 |
+| Electrochemical transporter | 2,306 | 0.67 | 105 | 0.92 |
+| Hydrolase | 2,069 | 0.70 | 116 | 0.95 |
+| Fatty acid binding protein family | 2,019 | 0.69 | - | - |
+| Reader | 2,012 | 0.72 | 190 | 0.96 |
+| Other ion channel | 1,993 | 0.75 | 243 | 0.98 |
+| Ligand-gated ion channel | 1,977 | 0.69 | 77 | 0.97 |
+| Eraser | 1,974 | 0.72 | 88 | 0.97 |
+| Ligase | 1,952 | 0.73 | 95 | 0.97 |
+| Phosphatase | 1,944 | 0.75 | 118 | 1.00 |
+| Writer | 1,931 | 0.80 | 174 | 0.99 |
+| Oxidoreductase | 1,918 | 0.72 | 157 | 0.96 |
+| Isomerase | 1,914 | 0.73 | 217 | 0.98 |
+| Lyase | 1,893 | 0.73 | 110 | 0.99 |
+| Toll-like and Il-1 receptors | 1,880 | 0.69 | 30 | 1.00 |
+| Nuclear receptor | 1,871 | 0.72 | 89 | 0.99 |
+| Phosphodiesterase | 1,829 | 0.72 | 76 | 0.99 |
+| Cytochrome P450 | 1,785 | 0.70 | - | - |
+| Primary active transporter | 1,781 | 0.69 | 75 | 1.00 |
+| Voltage-gated ion channel | 1,773 | 0.71 | 110 | 0.97 |
+| Family C G protein-coupled receptor | 1,751 | 0.70 | 83 | 0.99 |
+| Family B G protein-coupled receptor | 1,727 | 0.74 | 316 | 0.94 |
+| Aminoacyltransferase | 960 | 0.66 | - | - |
+| Frizzled family G protein-coupled receptor | 515 | 0.74 | - | - |
+| Taste family G protein-coupled receptor | 474 | 0.59 | - | - |
+| Calcium channel auxiliary subunit alpha2delta family | 434 | 0.62 | - | - |
+| Transmembrane 1-electron transfer carriers | 367 | 0.73 | - | - |
+| Group translocator | 148 | 0.72 | - | - |
 
 ### By endpoint
 
@@ -203,11 +204,11 @@ functional readings as well as binding ones.
 
 | endpoint | comparisons | accuracy |
 |---|---|---|
-| IC50 | 34,481 | 0.713 |
-| Ki | 12,900 | 0.717 |
-| EC50 | 9,375 | 0.713 |
-| Kd | 8,431 | 0.685 |
-| Kb | 538 | 0.731 |
+| IC50 | 34,481 | 0.71 |
+| Ki | 12,900 | 0.72 |
+| EC50 | 9,375 | 0.71 |
+| Kd | 8,431 | 0.69 |
+| Kb | 538 | 0.73 |
 
 ## Target preference, "SLS"
 
@@ -224,8 +225,8 @@ which of the two targets the compound prefers.](docs/arch-cross-family.svg)
 **The worked case.** Olanzapine put to the histamine H1 receptor, a G
 protein-coupled receptor, and to hERG, a voltage-gated ion channel. Both are real
 measurements from the training data: pKi **8.50** at H1 against **4.44** at hERG,
-so the compound is active at a concentration 4.1 log units lower at H1. The model answers **0.902 for
-H1**, the measured order. The target pictures are schematics of each protein's
+so the compound is active at a concentration 4.1 log units lower at H1. The model prefers **H1 at
+strength 0.90**, the measured order. The target pictures are schematics of each protein's
 architecture, not structures.
 
 ```
@@ -257,7 +258,7 @@ every held-out comparison involves chemistry the model was never fitted on.
 
 | | |
 |---|---|
-| **Accuracy** | **0.750** on 8,689 held-out comparisons over 2,195 ligands |
+| **Accuracy** | **0.75** on 8,689 held-out comparisons over 2,195 ligands |
 | Targets servable | 1,879 across 34 protein families |
 | Comparisons, total | 89,888 over 22,588 ligands and 290 family pairings |
 | Comparisons fitted on | 81,199 over 20,393 ligands |
@@ -269,9 +270,9 @@ compound, because some families simply carry more potent chemistry than others.
 
 | what is being asked | accuracy |
 |---|---|
-| **the model** | **0.750** |
-| always pick whichever family usually wins that pairing | 0.655 |
-| the same forest with the **ligand removed** | 0.710 |
+| **the model** | **0.75** |
+| always pick whichever family usually wins that pairing | 0.66 |
+| the same forest with the **ligand removed** | 0.71 |
 
 The compound contributes about **four points** on top of target identity. That
 margin was reproduced at 3.9, 4.5 and 4.1 points across three independently built
@@ -280,28 +281,28 @@ on its own.
 
 #### Accuracy rises with prediction strength
 
-![Accuracy rises from 0.750 answering everything to 0.966 at a strength cutoff of
+![Accuracy rises from 0.75 answering everything to 0.97 at a strength cutoff of
 0.90, while the share of comparisons still answered falls from 100 percent to 22
 percent.](docs/strength-tradeoff.svg)
 
-Strength is the larger of the two returned probabilities, so it runs 0.5 to 1.0.
+Strength is max(p, 1 - p) of the returned probability p, so it runs 0.5 to 1.0.
 
 | strength at or above | comparisons kept | accuracy |
 |---|---|---|
-| answer everything | 100% | 0.750 |
-| 0.60 | 74.4% | 0.815 |
-| 0.70 | 52.0% | 0.877 |
-| 0.80 | 35.9% | 0.933 |
-| 0.90 | 22.1% | 0.966 |
+| answer everything | 100% | 0.75 |
+| 0.60 | 74.4% | 0.81 |
+| 0.70 | 52.0% | 0.88 |
+| 0.80 | 35.9% | 0.93 |
+| 0.90 | 22.1% | 0.97 |
 
 #### A near-tie is a near-tie
 
 | true separation | comparisons | accuracy |
 |---|---|---|
-| under half a log | 2,283 | 0.573 |
-| half a log to one log | 1,766 | 0.701 |
-| one to two logs | 2,359 | 0.797 |
-| beyond two logs | 2,281 | 0.915 |
+| under half a log | 2,283 | 0.57 |
+| half a log to one log | 1,766 | 0.70 |
+| one to two logs | 2,359 | 0.80 |
+| beyond two logs | 2,281 | 0.92 |
 
 #### Some pairings are much harder than others
 
@@ -309,17 +310,17 @@ Across pairings carrying at least 100 held-out comparisons, strongest first:
 
 | pairing | comparisons | accuracy |
 |---|---|---|
-| Kinase against Voltage-gated ion channel | 144 | 0.931 |
-| Cytochrome P450 against Kinase | 278 | 0.899 |
-| Cytochrome P450 against Oxidoreductase | 105 | 0.886 |
+| Kinase against Voltage-gated ion channel | 144 | 0.93 |
+| Cytochrome P450 against Kinase | 278 | 0.90 |
+| Cytochrome P450 against Oxidoreductase | 105 | 0.89 |
 
 and the hardest:
 
 | pairing | comparisons | accuracy |
 |---|---|---|
-| Electrochemical transporter against Family A G protein-coupled receptor | 531 | 0.655 |
-| Cytochrome P450 against Voltage-gated ion channel | 121 | 0.744 |
-| Eraser against Kinase | 121 | 0.744 |
+| Electrochemical transporter against Family A G protein-coupled receptor | 531 | 0.66 |
+| Cytochrome P450 against Voltage-gated ion channel | 121 | 0.74 |
+| Eraser against Kinase | 121 | 0.74 |
 
 Pairings with fewer than 30 held-out comparisons are not quoted, here or in the
 manifest.
@@ -328,10 +329,10 @@ manifest.
 
 | endpoint | comparisons | accuracy |
 |---|---|---|
-| IC50 | 6,577 | 0.776 |
-| Ki | 1,440 | 0.697 |
-| Kd | 558 | 0.588 |
-| EC50 | 114 | 0.693 |
+| IC50 | 6,577 | 0.78 |
+| Ki | 1,440 | 0.70 |
+| Kd | 558 | 0.59 |
+| EC50 | 114 | 0.69 |
 
 The Kd row is thin and weak; do not lean on it.
 

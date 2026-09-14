@@ -105,10 +105,9 @@ def main(argv=None):
             st = max(p, 1 - p)
             _cut, bacc = band(st, cum)
             print("%s (%s)" % (a.target, fam))
-            print("  P(the target prefers the first compound) = %.4f" % p)
-            print("  prefers the %s compound at strength %.4f"
+            print("  prefers the %s compound at strength %.2f"
                   % ("first" if p >= 0.5 else "second", st))
-            print("  that band is right %.3f of the time" % bacc)
+            print("  that band is right %.2f of the time" % bacc)
             return 0
 
         smiles, names = list(a.smiles), {}
@@ -135,8 +134,8 @@ def main(argv=None):
             _cut, bacc = band(st, cum)
             label = names.get(smi, smi)
             print("%-4d %8.3f %9.3f  %-13.3f %s" % (i, win, st, bacc, label))
-        print("\nHeadline %.3f on %s held-out comparisons, both compounds unseen. "
-              "The same forest with the target removed scores %.3f."
+        print("\nHeadline %.2f on %s held-out comparisons, both compounds unseen. "
+              "The same forest with the target removed scores %.2f."
               % (perf["accuracy"], "{:,}".format(perf["held_out_comparisons"]),
                  perf["baseline_sequence_blind"]),
               file=sys.stderr)
@@ -163,9 +162,8 @@ def main(argv=None):
         s = max(p, 1 - p)
         cut, acc = band(s, cum)
         print("%s (%s)  vs  %s (%s)" % (a.a, P.family_of(m, a.a), a.b, P.family_of(m, a.b)))
-        print("  P(the compound prefers %s) = %.4f" % (a.a, p))
-        print("  prefers %s at strength %.4f" % (a.a if p >= 0.5 else a.b, s))
-        print("  that band is right %.3f of the time" % acc)
+        print("  prefers %s at strength %.2f" % (a.a if p >= 0.5 else a.b, s))
+        print("  that band is right %.2f of the time" % acc)
         return 0
 
     ranked = P.rank_targets(m, a.smiles, asked)
@@ -173,10 +171,10 @@ def main(argv=None):
     for row in ranked:
         acc_, fam, win, st = row[0], row[1], float(row[2]), float(row[3])
         _cut, bacc = band(st, cum)
-        print("%-10s %-38s %8.3f %9.3f  %.3f" % (acc_, (fam or ""), win, st, bacc))
-    print("\nHeadline %.3f on %s held-out comparisons. Picking whichever family "
-          "usually wins a pairing scores %.3f, and the same forest with the ligand "
-          "removed scores %.3f."
+        print("%-10s %-38s %8.3f %9.3f  %.2f" % (acc_, (fam or ""), win, st, bacc))
+    print("\nHeadline %.2f on %s held-out comparisons. Picking whichever family "
+          "usually wins a pairing scores %.2f, and the same forest with the ligand "
+          "removed scores %.2f."
           % (perf["accuracy"], "{:,}".format(perf["held_out_comparisons"]),
              perf["family_prior_accuracy"], perf["ligand_blind_accuracy"]),
           file=sys.stderr)
