@@ -345,6 +345,15 @@ FFM_MODELS=selectivity ./install.sh   # or just the smaller one, the target-pref
 FFM_MODELS=preference  ./install.sh
 ```
 
+**Nothing is fetched from Hugging Face, and nothing needs torch.** Each bundle
+ships `sequence_vectors.npz`, the ESM2 vectors for every target it can score,
+already computed. `predict.py` reads them out of that file; asked about an
+accession the bundle does not carry it raises rather than reaching for a
+checkpoint, so scoring is fully offline and cannot be broken by an upstream
+model being moved or relicensed. `embed.py`, `torch` and `transformers` are
+needed only to BUILD a bundle for a sequence that is not already in one, which
+is why they are commented out of `requirements.txt`.
+
 That builds the environment with the versions pinned below, fetches the bundles,
 and **proves each one works** by checking its forest against the checksum in its
 own manifest and replaying the reference predictions that ship inside it. If they

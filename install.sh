@@ -16,7 +16,10 @@ HERE="$(cd "$(dirname "$0")" && pwd)"
 # The bundles are served from the project site. Nothing here names any hosting
 # provider or account: the site is the published address and stays the published
 # address even if what sits behind it changes.
-BASE_URL="${FFM_BASE_URL:-https://familyfoundationmodel.com/models}"
+# Downloads go through the site's download endpoint, which records them and
+# redirects to the archive, so -L is required. Set FFM_BASE_URL to the static
+# /models path to bypass it.
+BASE_URL="${FFM_BASE_URL:-https://familyfoundationmodel.com/api/v1/download}"
 WANT="${FFM_MODELS:-both}"
 
 echo "== environment"
@@ -26,7 +29,7 @@ python3 -m venv "$HERE/.venv"
 pip install --quiet --upgrade "pip>=24.1"
 pip install --quiet -r "$HERE/requirements.txt"
 
-fetch () {          # fetch <archive> <bundle-dir> <joblib>
+fetch () {          # fetch <key> <bundle-dir> <joblib>
   local archive="$1" dir="$HERE/ffm-models/$2" jb="$3"
   if [ -f "$dir/$jb" ]; then
     echo "   $2 already present, not refetched"
@@ -90,14 +93,14 @@ PY
 
 if [ "$WANT" = "both" ] || [ "$WANT" = "selectivity" ]; then
   echo "== target-preference bundle"
-  fetch xfam_v1.tar.gz xfam_v1 familyfm_selectivity.joblib
+  fetch target xfam_v1 familyfm_selectivity.joblib
   echo "== proving the target-preference model works"
   verify xfam_v1 familyfm_selectivity.joblib selectivity
 fi
 
 if [ "$WANT" = "both" ] || [ "$WANT" = "preference" ]; then
   echo "== compound-preference bundle"
-  fetch lsl_v1.tar.gz lsl_v2_stratified familyfm_preference.joblib
+  fetch preference lsl_v2_stratified familyfm_preference.joblib
   echo "== proving the compound-preference model works"
   verify lsl_v2_stratified familyfm_preference.joblib preference
 fi
