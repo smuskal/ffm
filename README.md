@@ -161,7 +161,7 @@ comparisons rather than the same share of its own pool: families differ in pool
 size by a factor of 600, so equal shares would have left the smallest with too
 few to quote. Every accuracy is printed with its n. The same table at every gate
 is on the site, with a control that moves the gate:
-<https://familyfoundationmodel.com/preference.html>
+<https://familyfoundationmodel.com/methods.html#preference>
 
 | family | held out | accuracy, no gate | n at 0.80 | accuracy at 0.80 |
 |---|---|---|---|---|
@@ -235,7 +235,7 @@ Target A P35367   HRH1,  Family A G protein-coupled receptor
 Target B Q12809   KCNH2, Voltage-gated ion channel
 ```
 
-Paste that into <https://familyfoundationmodel.com/rank.html> and you should get
+Paste that into <https://familyfoundationmodel.com/rank-targets.html> and you should get
 the same answer.
 
 The whole comparison is one row and **the order is the question**. Nothing is
