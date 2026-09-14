@@ -1,0 +1,61 @@
+{
+ "what": "SHA256 of the float32 (20, 1038) ligand feature matrix the model is fed, for the 20 SMILES in familyfm/rdkit_check.py",
+ "encoder": "Morgan COUNT fingerprint radius 2, 1024 bits via rdFingerprintGenerator.GetMorganGenerator, then 14 descriptors: MolWt, HeavyAtomCount, NumBonds, NumRotatableBonds, RingCount, then counts of C N O S F Cl Br I P",
+ "shape": [
+  20,
+  1038
+ ],
+ "sha256": "1bd8139b4ff960f1457e30010bd487a287b6ddd50ae663dd1a6227847a695519",
+ "row_sums": [
+  60.069,
+  115.114,
+  216.165,
+  276.194,
+  296.285,
+  120.094,
+  120.094,
+  197.122,
+  174.151,
+  122.15,
+  63.443,
+  78.044,
+  117.11,
+  255.639,
+  204.111,
+  369.351,
+  374.43,
+  402.28,
+  361.358,
+  1287.973
+ ],
+ "nonzero_per_row": [
+  11,
+  8,
+  27,
+  31,
+  32,
+  19,
+  19,
+  24,
+  23,
+  15,
+  5,
+  13,
+  15,
+  28,
+  20,
+  27,
+  23,
+  40,
+  34,
+  113
+ ],
+ "reference_environment": {
+  "python": "3.10.15",
+  "rdkit": "2025.09.5",
+  "numpy": "2.2.6",
+  "scikit_learn": "1.7.2",
+  "platform": "darwin"
+ },
+ "how_to_verify": "python -m familyfm.rdkit_check"
+}

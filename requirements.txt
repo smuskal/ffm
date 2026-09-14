@@ -1,0 +1,18 @@
+# The bundle's own pins. Do NOT relax the first four: a joblib forest is a
+# pickled object graph, and a different scikit-learn either refuses to load it or
+# loads it and scores differently. rdkit is pinned because it computes 1,024 of
+# every ligand block's 1,038 dimensions.
+scikit-learn==1.7.2
+numpy==2.2.6
+joblib==1.5.3
+rdkit==2025.09.5
+
+# Needed ONLY to embed a sequence the bundle does not already carry. The shipped
+# roster has precomputed vectors, so normal use never imports these.
+# torch==2.9.1
+# transformers==4.57.3
+
+# TRAINING ONLY. Scoring does not import pandas; extract, pairs, train and
+# finalize all do, so the "Reproducing the training set" flow needs it and
+# fails with ModuleNotFoundError without it.
+# pandas==2.3.3

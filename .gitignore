@@ -1,0 +1,23 @@
+# MODEL WEIGHTS AND DATA NEVER GO IN THE REPOSITORY. The forest is 94 MB, the
+# paired comparison files run to hundreds of megabytes, and both are rebuilt or
+# downloaded rather than stored here.
+*.joblib
+*.npz
+models/
+bundles/
+data/
+*.csv
+*.csv.gz
+
+__pycache__/
+*.pyc
+.DS_Store
+.venv/
+
+# never commit a credential, even by accident
+*.env
+.env
+*.pem
+*.key
+*credentials*.json
+*secret*

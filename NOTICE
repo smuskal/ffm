@@ -1,0 +1,11 @@
+Family Foundation Model
+Copyright 2026 Eidogen-Sertanty, Inc.
+
+This product includes software developed at Eidogen-Sertanty, Inc.
+
+The model weights distributed with this project are trained on ChEMBL 37,
+released by the European Bioinformatics Institute under CC BY-SA 3.0, and are
+themselves distributed under CC BY-SA 4.0. See LICENSE-MODEL.txt.
+
+The architecture diagram in docs/ is (c) 2026 Eidogen-Sertanty, Inc., included
+for documentation, and is not covered by the Apache license on the code.
