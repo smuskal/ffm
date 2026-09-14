@@ -1,6 +1,6 @@
 # Family Foundation Model
 
-**Two pairwise comparators over a roster spanning 38 protein families across
+**Two pairwise comparators over a roster spanning 34 protein families across
 the two models.**
 Neither predicts a value. Each answers one two-class question and returns a
 preference probability.
@@ -80,13 +80,13 @@ Compound B CO[C@H]1CC[C@H](n2c([C@@H]3CCCC(=O)N3c3ccc(F)c(F)c3)nc3cc(-c4c(C)noc4
 Target     Q09472   EP300, Histone acetyltransferase p300
 ```
 
-### Multi-family, and what that claims
+### Multi-family, from the roster
 
-A single preference comparison never crosses a family boundary, because the
-target is held fixed. The model is multi-family because its **roster** is: one
-forest ranks compounds at any of 2,079 targets across
-36 protein families. That is the larger of the two claims
-in this repository.
+Each compound comparison is anchored at one target, and the family span lives
+in the roster the estimator serves: one forest ranks compounds at any of 2,079
+targets across 32 protein families. The two comparators reach the same breadth
+from opposite directions: the target comparison crosses a boundary inside one
+comparison, the compound comparison carries the whole roster inside one model.
 
 ### The numbers
 
@@ -98,7 +98,7 @@ during fitting.
 | | |
 |---|---|
 | **Accuracy** | **0.710** on 65,725 held-out comparisons over 43,961 compounds |
-| Targets servable | 2,079 across 36 protein families |
+| Targets servable | 2,079 across 32 protein families |
 | Training comparisons | 1,827,578 over 474,708 compounds and 2,077 targets |
 | Row layout | ligand, sequence, ligand, 2,556 columns |
 
@@ -151,7 +151,7 @@ it with the accuracy of its band, never on its own.
 
 ### Every family with held-out comparisons
 
-The roster this model can score spans 36 families; 31 of them carry enough
+The roster this model can score spans 32 families; 31 of them carry enough
 held-out comparisons to quote an accuracy for, and those 31 are the table below,
 summing to all 65,725 held-out comparisons. This is what evidences the
 multi-family claim. The holdout fraction is set per
@@ -258,7 +258,7 @@ every held-out comparison involves chemistry the model was never fitted on.
 | | |
 |---|---|
 | **Accuracy** | **0.750** on 8,689 held-out comparisons over 2,195 ligands |
-| Targets servable | 1,879 across 38 protein families |
+| Targets servable | 1,879 across 34 protein families |
 | Comparisons, total | 89,888 over 22,588 ligands and 290 family pairings |
 | Comparisons fitted on | 81,199 over 20,393 ligands |
 
