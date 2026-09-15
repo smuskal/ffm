@@ -1,11 +1,23 @@
-# The bundle's own pins. Do NOT relax the first four: a joblib forest is a
-# pickled object graph, and a different scikit-learn either refuses to load it or
-# loads it and scores differently. rdkit is pinned because it computes 1,024 of
-# every ligand block's 1,038 dimensions.
+# Pinned exactly: these touch the pickled forest. These are the versions the
+# models were built with. Another scikit-learn warns on load; install.sh replays
+# each bundle's reference predictions, which is how a changed environment is
+# confirmed.
 scikit-learn==1.7.2
 numpy==2.2.6
 joblib==1.5.3
-rdkit==2025.09.5
+
+# rdkit is a range, deliberately, as in the Kinase Foundation Model. It never
+# touches the forest; it computes the compound block, and releases 2024.03.6
+# through 2025.09.5 compute byte-identical features over 3,285 structures.
+# Earlier 2024.03 releases predate numpy 2 support. One exact pin breaks
+# installation on Intel macOS, where rdkit's last wheel is 2025.9.3, including an
+# Intel Python running under Rosetta on Apple Silicon. Check with:
+#   python -c "import platform; print(platform.machine())"
+# The cap holds installs to measured releases: 2025.09.6 and later count
+# rotatable bonds differently on some deuterated structures. Re-measure before
+# raising it, over a large structure set as well as:
+#   python -m familyfm.rdkit_check
+rdkit>=2024.3.6,<=2025.9.5
 
 # Needed ONLY to embed a sequence the bundle does not already carry. The shipped
 # roster has precomputed vectors, so normal use never imports these.

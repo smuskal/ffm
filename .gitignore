@@ -8,6 +8,8 @@ bundles/
 data/
 *.csv
 *.csv.gz
+# except the small worked inputs the extend tool documents
+!extend/examples/*.csv
 
 __pycache__/
 *.pyc

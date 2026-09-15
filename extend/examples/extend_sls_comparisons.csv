@@ -1,0 +1,15 @@
+smiles,accession_a,accession_b,pic50_a,pic50_b,relation_a,relation_b,assay_measure
+C=CC(=O)Nc1cc2c(Nc3ccc(F)c(Cl)c3)ncnc2cc1OCc1cn(CCCC(=O)NO)nn1,P04626,Q13547,8.2441,7.1249,=,=,IC50
+O=C1c2ccccc2C(=O)N1CCCCN1CC=C(c2c[nH]c3ccc(F)cc23)CC1,P31645,P41595,9.1,8.8,=,=,Ki
+O=c1[nH]c2ccccc2n1CCCN1CCC(n2c(=O)[nH]c3cc(Cl)ccc32)CC1,P31645,P18825,5.515,5.9952,=,=,IC50
+O=C(c1cc([C@H]2CCCN2c2cc(F)cc(F)c2)c2oc(N3CCOCC3)cc(=O)c2c1)N1CCOCC1,P42345,P42338,4.3768,8.5537,=,=,IC50
+CC(=O)O[C@H]1CC[C@]2(C)[C@H]3C(=O)C=C4[C@@H]5C[C@@](C)(C(=O)O)CC[C@]5(C)CC[C@@]4(C)[C@]3(C)CC[C@H]2C1(C)C,O00748,P37059,4.3924,5.4225,=,=,IC50
+CN1C/C=C/CCOc2cccc(c2)-c2ccnc(n2)Nc2cccc(c2)C1,Q8IVH8,P22830,6.0706,6.6144,=,=,Kd
+COCC(=O)O[C@]1(CCN(C)CCCc2nc3ccccc3[nH]2)CCc2cc(F)ccc2[C@@H]1C(C)C,P11712,Q12809,4.5467,5.8539,=,=,IC50
+O=c1c2cc(Cl)ccc2oc2ccc(OCCCCCN3CCCCCC3)cc12,P27338,P06276,6.0472,5.7972,=,=,IC50
+Cc1ccc(-c2ccc3ncc4c(c3n2)n([C@H]2CC[C@H](OCCO)CC2)c(=O)n4C)cn1,P42336,P42345,8.7747,7.9431,=,=,Ki
+CNC[C@]1(O)Cc2ccccc2[C@@H]1Oc1ccccc1Cl,P31645,P10635,6.1549,5.699,=,=,IC50
+Cl.Nc1ncccc1-c1nc2ccc(-c3cccnc3)nc2n1-c1ccc(C2(N)CCC2)cc1,P31749,P08684,7.2518,4.7447,=,=,IC50
+Fc1cccc(Cl)c1Oc1ncccc1C1CCNCC1,P08908,P31645,7.9586,6.7122,=,=,Ki
+Cc1cnc(-c2nc3c(F)c(-c4cccc(Cl)c4C)c(CCC#N)cc3c3c2cc([C@@H](C)N2CCOCC2=O)n3[C@H]2[C@H]3CN[C@@H]2C3)cn1,Q12809,P01116,4.9508,7.5224,=,=,IC50
+COc1cccc(C(=O)COc2ccc(CC3SC(=O)NC3=O)cc2)c1,P11712,O95563,4.6383,5.9208,=,=,IC50

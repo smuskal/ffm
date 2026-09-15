@@ -34,6 +34,11 @@ here.
 **Model release: 13 September 2026.** Trained on **ChEMBL 37 alone**, which is what
 makes the weights freely downloadable.
 
+**Add your own data.** Either released model can be extended with measurements
+you hold, on your own machine, including targets outside the released roster.
+See [Extend a model with your own data](#extend-a-model-with-your-own-data) and
+the full guide, [`extend/EXTEND.md`](extend/EXTEND.md).
+
 ## What "prefers" means, and why that word
 
 The endpoints are Ki, Kd, IC50, EC50 and Kb, and they do not all measure one
@@ -301,14 +306,19 @@ FFM_MODELS=selectivity ./install.sh   # or just the smaller one, the target-pref
 FFM_MODELS=preference  ./install.sh
 ```
 
+**Python 3.10 to 3.13**, on macOS or Linux. The models were built on 3.10.15, and
+both bundles verify identically on 3.12. `install.sh` finds a suitable Python on
+its own and stops with instructions if there is none. Set `FFM_PYTHON=/path/to/python3.12` to choose one yourself. On a Mac:
+`brew install python@3.12`.
+
 **Nothing is fetched from Hugging Face, and nothing needs torch.** Each bundle
 ships `sequence_vectors.npz`, the ESM2 vectors for every target it can score,
 already computed. `predict.py` reads them out of that file; asked about an
 accession the bundle does not carry it raises rather than reaching for a
 checkpoint, so scoring is fully offline and cannot be broken by an upstream
 model being moved or relicensed. `embed.py`, `torch` and `transformers` are
-needed only to BUILD a bundle for a sequence that is not already in one, which
-is why they are commented out of `requirements.txt`.
+needed only to add a target by sequence, when extending a model or building a
+bundle, which is why they are commented out of `requirements.txt`.
 
 That builds the environment with the versions pinned below, fetches the bundles,
 and **proves each one works** by checking its forest against the checksum in its
@@ -412,20 +422,79 @@ descriptors. Sequences are ESM2 `esm2_t12_35M_UR50D`, mean pooled over residues.
 
 ## Pin these versions
 
-A joblib forest is a pickled object graph: a different scikit-learn either
-refuses to load it or loads it and scores differently. RDKit computes 1,024 of
-every ligand block's 1,038 dimensions, so a different RDKit changes the
-fingerprint and moves every score **with nothing to detect it**.
+A joblib forest is a pickled object graph, so scikit-learn, numpy and joblib are
+pinned to the build versions. Another scikit-learn warns when it loads a forest;
+both bundles were checked under 1.6.1 and reproduce their reference predictions,
+and the installer's replay is how you confirm any environment. RDKit computes
+1,024 of every ligand block's 1,038 dimensions, so it is held to the releases
+measured to compute byte-identical features.
 
 | package | pinned |
 |---|---|
+| python | 3.10.15 built; 3.10 to 3.13 supported |
+| scikit-learn | 1.7.2 |
 | numpy | 2.2.6 |
-| python | 3.10.15 |
-| sklearn | 1.7.2 |
+| joblib | 1.5.3 |
+| rdkit | 2025.09.5 built; 2024.03.6 to 2025.09.5 compute identical features |
+
+`install.sh` installs these from `requirements.txt`, including RDKit, so nothing
+needs installing by hand first. `python -m familyfm.rdkit_check` confirms your
+RDKit computes the same ligand features the forests were fitted on.
 
 `torch` and `transformers` are needed only to embed a sequence the bundle does
 not already carry. For the shipped roster the vectors are precomputed, so normal
 use never imports them.
+
+## Extend a model with your own data
+
+`extend/ffm_extend.py` fits decision trees on measurements you hold and merges
+them into a released forest, on your own machine. Your structures, sequences and
+activity values stay on your computer and are never written into the bundle;
+only the trees fitted from them are. It works on both released models and reads
+the layout from the bundle's own manifest, so one command serves either. The base
+bundle is opened read-only, and the output is a complete bundle carrying the
+merged forest under the base model's filename, so the bundle's `predict.py` loads
+it unchanged.
+
+```bash
+python extend/ffm_extend.py --base ffm-models/lsl_v2_stratified --data mine.csv --out ./mine_lsl
+python extend/ffm_extend.py --base ffm-models/xfam_v1           --data mine.csv --out ./mine_sls
+```
+
+**Your targets can go beyond the roster.** Name a target by `accession` to use
+one of the 2,079 or 1,879 targets a bundle already carries. Supply its `sequence`
+instead and the tool embeds it with the same ESM2 recipe the models were built on,
+fits your trees on it, and writes it into the output bundle's sequence vectors and
+target index, so it is servable afterwards like any other target.
+
+Input is a CSV, either one measurement per row or comparisons you have already
+paired; the tool detects which. `--sweep` measures accuracy against the number of
+trees added, on your held-out comparisons and on a breadth reference spread across
+the roster, and recommends a tree count. Worked input files for both models are in
+[`extend/examples/`](extend/examples/).
+
+**Measured on held-out public ChEMBL data.** Compound preference, 1,858 added
+comparisons across five targets with 797 more from those targets held out: 80
+added trees moved accuracy on those targets from 0.69 to 0.73, with the breadth
+reference steady at 0.69. Target preference, 6,000 added comparisons with 1,200
+held out: 40 added trees moved accuracy from 0.75 to 0.76. What your own data adds
+depends on your data.
+
+**An extended model is measured on your data.** Added trees change every
+prediction, so the tool replaces the performance block in the output manifest with
+a withdrawal notice and renames `reference_predictions.json` to `.base`. Measure
+the extended model on your own held-out comparisons before quoting a number from
+it, and re-measure the strength operating point there too.
+
+**Target preference pairs.** The released target preference model was fitted and
+measured on targets from different families. Same-family pairs you add are fitted
+like any other; measure them on your own held-out comparisons.
+
+Requirements: scikit-learn must match the version in the bundle manifest, since
+trees from different minor versions are never merged and the tool stops rather
+than produce one. Adding a target by sequence also needs `torch` and
+`transformers`; naming targets by accession needs neither. The full guide,
+including input formats and the sweep, is [`extend/EXTEND.md`](extend/EXTEND.md).
 
 ## Reproducing the training set
 

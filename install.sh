@@ -22,24 +22,67 @@ HERE="$(cd "$(dirname "$0")" && pwd)"
 BASE_URL="${FFM_BASE_URL:-https://familyfoundationmodel.com/api/v1/download}"
 WANT="${FFM_MODELS:-both}"
 
+# Python 3.12 is the recommended interpreter; 3.10 to 3.13 work. The pins in
+# requirements.txt have wheels for exactly that range on macOS and Linux.
+# Set FFM_PYTHON to choose one yourself.
+pick_python () {
+  local c
+  for c in ${FFM_PYTHON:-} python3.12 python3.13 python3.11 python3.10 python3; do
+    command -v "$c" >/dev/null 2>&1 || continue
+    if "$c" -c 'import platform, sys
+import ensurepip, venv
+sys.exit(0 if (3, 10) <= sys.version_info[:2] <= (3, 13) else 1)' >/dev/null 2>&1
+    then command -v "$c"; return 0; fi
+    if [ -n "${FFM_PYTHON:-}" ]; then return 1; fi
+  done
+  return 1
+}
+if ! PY="$(pick_python)"; then
+  cat >&2 <<'MSG'
+No suitable Python found. Install needs Python 3.10 to 3.13; 3.12 is a good choice.
+  macOS:  brew install python@3.12      then rerun ./install.sh
+  Linux:  your package manager's python3.12, or  uv python install 3.12
+  any:    FFM_PYTHON=/path/to/python3.12 ./install.sh
+MSG
+  exit 1
+fi
+
 echo "== environment"
-python3 -m venv "$HERE/.venv"
+echo "   using $PY ($("$PY" -c 'import platform,sys;print(sys.version.split()[0], platform.machine())'))"
+# a .venv left by an earlier run under a different Python is rebuilt, not reused
+if [ -x "$HERE/.venv/bin/python" ] && \
+   [ "$("$HERE/.venv/bin/python" -c 'import sys;print(sys.version_info[:2])')" != "$("$PY" -c 'import sys;print(sys.version_info[:2])')" ]; then
+  rm -rf "$HERE/.venv"
+fi
+"$PY" -m venv "$HERE/.venv"
 # shellcheck disable=SC1091
 . "$HERE/.venv/bin/activate"
 pip install --quiet --upgrade "pip>=24.1"
-pip install --quiet -r "$HERE/requirements.txt"
+if ! pip install --quiet -r "$HERE/requirements.txt"; then
+  echo >&2
+  echo "pip could not install the pinned libraries. What this environment is:" >&2
+  python -VV >&2
+  python -c 'import platform, sys; print("executable", sys.executable); print("machine   ", platform.machine())' >&2
+  pip --version >&2
+  echo "Upgrade pip first (pip install -U pip) and rerun. On a Mac, machine x86_64" >&2
+  echo "means an Intel Python; a native arm64 Python is the usual fix." >&2
+  exit 1
+fi
 
-fetch () {          # fetch <key> <bundle-dir> <joblib>
-  local archive="$1" dir="$HERE/ffm-models/$2" jb="$3"
+fetch () {          # fetch <key> <archive-file> <bundle-dir> <joblib>
+  local key="$1" file="$2" dir="$HERE/ffm-models/$3" jb="$4"
+  # the download endpoint takes the key; the static /models path takes the file name
+  local url="$BASE_URL/$key"
+  case "$BASE_URL" in */models|*/models/) url="${BASE_URL%/}/$file" ;; esac
   if [ -f "$dir/$jb" ]; then
-    echo "   $2 already present, not refetched"
+    echo "   $3 already present, not refetched"
     return 0
   fi
   mkdir -p "$HERE/ffm-models"
-  local tmp; tmp="$(mktemp -t ffm)"
+  local tmp; tmp="$(mktemp "${TMPDIR:-/tmp}/ffm.XXXXXX")"
   # -L follows the redirect the site issues; --retry covers a dropped connection
   # part way through what can be a gigabyte
-  curl -fL --retry 3 "$BASE_URL/$archive" -o "$tmp"
+  curl -fL --retry 3 "$url" -o "$tmp"
   tar xzf "$tmp" -C "$HERE/ffm-models"
   rm -f "$tmp"
 }
@@ -93,14 +136,14 @@ PY
 
 if [ "$WANT" = "both" ] || [ "$WANT" = "selectivity" ]; then
   echo "== target-preference bundle"
-  fetch target xfam_v1 familyfm_selectivity.joblib
+  fetch target xfam_v1.tar.gz xfam_v1 familyfm_selectivity.joblib
   echo "== proving the target-preference model works"
   verify xfam_v1 familyfm_selectivity.joblib selectivity
 fi
 
 if [ "$WANT" = "both" ] || [ "$WANT" = "preference" ]; then
   echo "== compound-preference bundle"
-  fetch preference lsl_v2_stratified familyfm_preference.joblib
+  fetch preference lsl_v1.tar.gz lsl_v2_stratified familyfm_preference.joblib
   echo "== proving the compound-preference model works"
   verify lsl_v2_stratified familyfm_preference.joblib preference
 fi
