@@ -103,35 +103,6 @@ during fitting.
 | Training comparisons | 1,827,578 over 474,708 compounds and 2,077 targets |
 | Row layout | ligand, sequence, ligand, 2,556 columns |
 
-### Read the headline beside its baselines
-
-A preference comparator can score respectably while ignoring the target
-entirely, because some compounds simply read lower everywhere.
-
-| what is being asked | accuracy |
-|---|---|
-| **the model** | **0.71** |
-| the same forest with the **target removed** | 0.66 |
-| always pick the heavier compound, the size trap | 0.57 |
-| majority, which the swap fixes at a coin flip | 0.50 |
-
-The obvious compound-history baseline, each compound's mean pActivity across
-every target it was measured at, is a **lookup rather than a baseline**: the
-average includes the very measurement being predicted, and most held-out
-compounds are measured at exactly one target. Taken honestly, from targets
-**other than** the one being compared at, it can answer only 25,374 of the
-65,725 held-out comparisons, 38.6% of them, because it
-needs both compounds measured somewhere else already. The model needs only the
-two structures and the target sequence.
-
-| strength gate | comparisons both can answer | the model | the history baseline |
-|---|---|---|---|
-| answer everything | 25,374 | **0.70** | 0.67 |
-| 0.60 | 9,961 | **0.83** | 0.72 |
-| 0.70 | 3,771 | **0.91** | 0.78 |
-| 0.80 | 1,195 | **0.96** | 0.83 |
-| 0.90 | 270 | **0.99** | 0.87 |
-
 ### Accuracy rises with prediction strength
 
 ![Accuracy rises from 0.71 answering everything to
@@ -262,22 +233,6 @@ every held-out comparison involves chemistry the model was never fitted on.
 | Targets servable | 1,879 across 34 protein families |
 | Comparisons, total | 89,888 over 22,588 ligands and 290 family pairings |
 | Comparisons fitted on | 81,199 over 20,393 ligands |
-
-#### Read the headline beside its baselines. This is the point.
-
-A cross-family comparator can look respectable while knowing nothing about the
-compound, because some families simply carry more potent chemistry than others.
-
-| what is being asked | accuracy |
-|---|---|
-| **the model** | **0.75** |
-| always pick whichever family usually wins that pairing | 0.66 |
-| the same forest with the **ligand removed** | 0.71 |
-
-The compound contributes about **four points** on top of target identity. That
-margin was reproduced at 3.9, 4.5 and 4.1 points across three independently built
-versions of this model. It is real, and it is smaller than the headline suggests
-on its own.
 
 #### Accuracy rises with prediction strength
 

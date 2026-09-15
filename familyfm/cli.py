@@ -133,11 +133,9 @@ def main(argv=None):
             smi, win, st = row[0], float(row[1]), float(row[2])
             _cut, bacc = band(st, cum)
             label = names.get(smi, smi)
-            print("%-4d %8.3f %9.3f  %-13.3f %s" % (i, win, st, bacc, label))
-        print("\nHeadline %.2f on %s held-out comparisons, both compounds unseen. "
-              "The same forest with the target removed scores %.2f."
-              % (perf["accuracy"], "{:,}".format(perf["held_out_comparisons"]),
-                 perf["baseline_sequence_blind"]),
+            print("%-4d %8.2f %9.2f  %-13.2f %s" % (i, win, st, bacc, label))
+        print("\nHeadline %.2f on %s held-out comparisons, both compounds unseen."
+              % (perf["accuracy"], "{:,}".format(perf["held_out_comparisons"])),
               file=sys.stderr)
         return 0
 
@@ -171,12 +169,9 @@ def main(argv=None):
     for row in ranked:
         acc_, fam, win, st = row[0], row[1], float(row[2]), float(row[3])
         _cut, bacc = band(st, cum)
-        print("%-10s %-38s %8.3f %9.3f  %.2f" % (acc_, (fam or ""), win, st, bacc))
-    print("\nHeadline %.2f on %s held-out comparisons. Picking whichever family "
-          "usually wins a pairing scores %.2f, and the same forest with the ligand "
-          "removed scores %.2f."
-          % (perf["accuracy"], "{:,}".format(perf["held_out_comparisons"]),
-             perf["family_prior_accuracy"], perf["ligand_blind_accuracy"]),
+        print("%-10s %-38s %8.2f %9.2f  %.2f" % (acc_, (fam or ""), win, st, bacc))
+    print("\nHeadline %.2f on %s held-out comparisons."
+          % (perf["accuracy"], "{:,}".format(perf["held_out_comparisons"])),
           file=sys.stderr)
     return 0
 

@@ -24,8 +24,6 @@
   "held_out_comparisons": 8689,
   "held_out_ligands": 2195,
   "accuracy": 0.7496,
-  "family_prior_accuracy": 0.6545,
-  "ligand_blind_accuracy": 0.7104,
   "strength_cumulative": {
    "0.50": {
     "coverage": 1.0,

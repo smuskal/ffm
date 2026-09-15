@@ -1,4 +1,4 @@
-"""Fit and evaluate the cross-family target-preference comparator, with its baselines.
+"""Fit and evaluate the cross-family target-preference comparator.
 
 Split is compound-disjoint: a ligand's InChIKey decides which side it lands on, so
 no ligand appears in both fit and test. Ties are already dropped at pairing. Every
@@ -6,20 +6,9 @@ comparison is entered twice with the label inverted, and every prediction averag
 both target orders, so compare(A,B) + compare(B,A) is 1 and label balance is
 exactly 0.5000.
 
-Three numbers are reported together, and the first is meaningless without the
-other two:
-
-  the model
-  the FAMILY PRIOR: for each family pair, always pick whichever family won more
-    often in the fit set. If the model cannot beat this, it is a lookup table of
-    family pairs and the ligand is doing nothing.
-  LIGAND BLIND: the same forest trained on the two sequence blocks alone. This is
-    the same test in model form.
-
     python -m familyfm.train --pairs data/pairs/all.csv --out models/xfam_v1
 """
 import argparse
-import collections
 import hashlib
 import json
 import os
@@ -63,7 +52,6 @@ def main(argv=None):
     ap.add_argument("--trees", type=int, default=300)
     ap.add_argument("--min-samples-leaf", type=int, default=8)
     ap.add_argument("--seed", type=int, default=0)
-    ap.add_argument("--skip-ligand-blind", action="store_true")
     a = ap.parse_args(argv)
     os.makedirs(a.out, exist_ok=True)
 
@@ -130,46 +118,6 @@ def main(argv=None):
     acc = float(correct.mean())
     print("\nMODEL held-out accuracy %.4f on %d comparisons" % (acc, len(tst)), flush=True)
 
-    # ---- baseline 1: family prior from the fit set ----
-    def famkey(r):
-        return tuple(sorted((r[0].split("|")[0], r[1].split("|")[0])))
-    win = collections.Counter()
-    tot = collections.Counter()
-    for faa, fbb, ya in zip(fit.family_a, fit.family_b, y):
-        k = famkey((faa, fbb))
-        tot[k] += 1
-        first = faa.split("|")[0]
-        # did the family that sorts first win this comparison
-        if (ya == 1 and first == k[0]) or (ya == 0 and first != k[0]):
-            win[k] += 1
-    prior_pred = []
-    for faa, fbb in zip(tst.family_a, tst.family_b):
-        k = famkey((faa, fbb))
-        p = win[k] / tot[k] if tot[k] else 0.5
-        first_is_k0 = faa.split("|")[0] == k[0]
-        # predict A wins if the family on side A is the one that usually wins
-        prior_pred.append((p >= 0.5) == first_is_k0)
-    prior_acc = float((np.array(prior_pred) == lab).mean())
-    print("FAMILY PRIOR accuracy   %.4f" % prior_acc, flush=True)
-
-    # ---- baseline 2: ligand blind, same forest without the ligand block ----
-    blind_acc = None
-    if not a.skip_ligand_blind:
-        Xb = np.vstack([np.hstack([fa, fb]), np.hstack([fb, fa])])
-        Yb = np.concatenate([y, 1 - y])
-        rb = RandomForestClassifier(n_estimators=a.trees,
-                                    min_samples_leaf=a.min_samples_leaf,
-                                    max_features="sqrt", random_state=a.seed,
-                                    n_jobs=-1)
-        rb.fit(Xb, Yb)
-        cb = int(np.where(rb.classes_ == 1)[0][0])
-        pb1 = rb.predict_proba(np.hstack([ta, tb]))[:, cb]
-        pb2 = rb.predict_proba(np.hstack([tb, ta]))[:, cb]
-        Pb = 0.5 * (pb1 + (1.0 - pb2))
-        blind_acc = float((((Pb > 0.5) == lab)).mean())
-        print("LIGAND BLIND accuracy   %.4f" % blind_acc, flush=True)
-        del Xb, Yb
-
     # ---- per family pair and per endpoint ----
     tst = tst.assign(p=P, correct=correct, strength=strength)
     per_pair = {}
@@ -216,8 +164,6 @@ def main(argv=None):
             "held_out_comparisons": int(len(tst)),
             "held_out_ligands": int(tst.inchikey.nunique()),
             "accuracy": round(acc, 4),
-            "family_prior_accuracy": round(prior_acc, 4),
-            "ligand_blind_accuracy": None if blind_acc is None else round(blind_acc, 4),
             "strength_cumulative": cumulative(strength, correct),
             "by_endpoint": per_end, "by_family_pair": per_pair,
             "gap_strata": gap_strata},
