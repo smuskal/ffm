@@ -69,6 +69,17 @@ if ! pip install --quiet -r "$HERE/requirements.txt"; then
   exit 1
 fi
 
+# The reference replay below cannot see every encoder change, so the ligand
+# features are checked directly, before anything is downloaded.
+echo "== proving RDKit computes the features the models were built on"
+if ! python -m familyfm.rdkit_check > "$HERE/.rdkit_check.log" 2>&1; then
+  cat "$HERE/.rdkit_check.log" >&2
+  echo "The ligand features differ from the build. Reinstall with the pins in" >&2
+  echo "requirements.txt rather than an RDKit already on this machine." >&2
+  exit 1
+fi
+echo "   features    OK  byte-identical, rdkit $(python -c 'import rdkit; print(rdkit.__version__)')"
+
 fetch () {          # fetch <key> <archive-file> <bundle-dir> <joblib>
   local key="$1" file="$2" dir="$HERE/ffm-models/$3" jb="$4"
   # the download endpoint takes the key; the static /models path takes the file name

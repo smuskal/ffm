@@ -13,9 +13,12 @@ joblib==1.5.3
 # installation on Intel macOS, where rdkit's last wheel is 2025.9.3, including an
 # Intel Python running under Rosetta on Apple Silicon. Check with:
 #   python -c "import platform; print(platform.machine())"
-# The cap holds installs to measured releases: 2025.09.6 and later count
-# rotatable bonds differently on some deuterated structures. Re-measure before
-# raising it, over a large structure set as well as:
+# The cap is for reproducibility. From 2025.09.6 RDKit no longer counts a fully
+# deuterated methyl as a rotatable bond, which is the more correct convention;
+# the models were built on the earlier one, so later releases change the features
+# of isotope-labeled compounds. The reference replay does not see that change,
+# and familyfm.rdkit_check, which install.sh runs, does. Re-run it before raising
+# the cap:
 #   python -m familyfm.rdkit_check
 rdkit>=2024.3.6,<=2025.9.5
 

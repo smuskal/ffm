@@ -320,8 +320,9 @@ model being moved or relicensed. `embed.py`, `torch` and `transformers` are
 needed only to add a target by sequence, when extending a model or building a
 bundle, which is why they are commented out of `requirements.txt`.
 
-That builds the environment with the versions pinned below, fetches the bundles,
-and **proves each one works** by checking its forest against the checksum in its
+That builds the environment with the versions pinned below, checks that RDKit
+computes byte-identical ligand features, fetches the bundles, and **proves each
+one works** by checking its forest against the checksum in its
 own manifest and replaying the reference predictions that ship inside it. If they
 do not reproduce to 1e-6 the install fails rather than reporting success.
 

@@ -163,7 +163,10 @@ class Bundle:
             k = self.accession_to_seq_key.get(value) or \
                 self.accession_to_seq_key.get(str(value).upper())
             return self.vectors[self.seq_key_to_row[k]]
-        s = emb.normalize(value)
+        # embed.py spells this normalize; an older copy spells it normalise.
+        # Accept either, so the two cannot drift into a break.
+        _norm = getattr(emb, "normalize", None) or getattr(emb, "normalise")
+        s = _norm(value)
         k = hashlib.md5(s.encode()).hexdigest()
         if k in self.seq_key_to_row:
             return self.vectors[self.seq_key_to_row[k]]

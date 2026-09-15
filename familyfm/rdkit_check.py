@@ -26,8 +26,8 @@ PROJECT = os.path.dirname(HERE)
 # clone with nothing built yet
 DEST = os.path.join(PROJECT, "docs", "rdkit_fingerprint_check.json")
 
-# Twenty structures chosen to exercise the encoder: aromatics, stereocenters,
-# charges, tautomer-prone rings, a macrocycle and a peptide.
+# Structures chosen to exercise the encoder: aromatics, stereocenters, charges,
+# tautomer-prone rings, a macrocycle, a peptide, and explicit hydrogen isotopes.
 SMILES = [
     "CCO",
     "c1ccccc1",
@@ -51,13 +51,34 @@ SMILES = [
     ("Cc1cc(-n2nc3c(c2-n2ccn(-c4ccc5c(cnn5C)c4F)c2=O)[C@H](C)N(C(=O)"
      "c2cc4cc([C@H]5CCOC(C)(C)C5)ccc4n2[C@@]2(c4noc(=O)[nH]4)C[C@@H]2C)"
      "CC3)cc(C)c1F"),
+    # Explicit hydrogen isotopes. RDKit 2025.09.6 stopped counting a fully
+    # deuterated methyl as a rotatable bond, so NumRotatableBonds moves for these
+    # and not for their protiated analogues. Without them in this set the check
+    # passes across that boundary and the change reaches a model silently.
+    "[2H]C([2H])([2H])N(C)C(=O)c1ccccc1",
+    "[2H]C([2H])([2H])CO",
+    ("[2H]C([2H])([2H])N(C(=O)c1c(F)cccc1Cl)c1ccc(-c2cc(NC(C)=O)nn2C(C)C)"
+     "cc1N1CCCCC1"),
+    "[3H]CC(=O)Nc1ccccc1",
 ]
 
 
 def features():
-    """The encoder, reached the same way the model reaches it."""
+    """The encoder, reached both ways a user reaches it.
+
+    The scoring path (familyfm.features) and the published extension tool
+    (extend/ffm_extend.py) each carry the recipe; they must agree with each other
+    as well as with the reference, so a drift in either is caught.
+    """
     from familyfm.features import ligand_features
-    return ligand_features(SMILES)
+    sys.path.insert(0, os.path.join(PROJECT, "extend"))
+    from ffm_extend import ligand_matrix
+    F = np.asarray(ligand_features(SMILES), dtype=np.float32)
+    G = np.asarray(ligand_matrix(SMILES), dtype=np.float32)
+    if F.shape != G.shape or not np.array_equal(F, G):
+        sys.exit("MISMATCH. familyfm.features and extend/ffm_extend.py compute "
+                 "different ligand features in this environment.")
+    return F
 
 
 def versions():
@@ -83,8 +104,9 @@ def main(argv=None):
 
     if a.write:
         json.dump({
-            "what": "SHA256 of the float32 (20, 1038) ligand feature matrix the "
-                    "model is fed, for the 20 SMILES in familyfm/rdkit_check.py",
+            "what": "SHA256 of the float32 (%d, 1038) ligand feature matrix the "
+                    "model is fed, for the %d SMILES in familyfm/rdkit_check.py"
+                    % (len(SMILES), len(SMILES)),
             "encoder": "Morgan COUNT fingerprint radius 2, 1024 bits via "
                        "rdFingerprintGenerator.GetMorganGenerator, then 14 "
                        "descriptors: MolWt, HeavyAtomCount, NumBonds, "
