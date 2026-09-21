@@ -445,7 +445,7 @@ full roster is at <https://familyfoundationmodel.com/targets.html>.
 
 ```python
 import familyfm.bundle_predict as P
-m = P.load("path/to/xfam_v1")
+m = P.load("path/to/xfam_v2_samefamily")
 
 P.compare_targets(m, smiles, "P00533", "P08684")   # P(the ligand prefers the first)
 P.rank_targets(m, smiles, ["P00533", "P08684", "P28223"])
@@ -539,11 +539,11 @@ it unchanged.
 
 ```bash
 python extend/ffm_extend.py --base ffm-models/lsl_v2_stratified --data mine.csv --out ./mine_lsl
-python extend/ffm_extend.py --base ffm-models/xfam_v1           --data mine.csv --out ./mine_sls
+python extend/ffm_extend.py --base ffm-models/xfam_v2_samefamily --data mine.csv --out ./mine_sls
 ```
 
 **Your targets can go beyond the roster.** Name a target by `accession` to use
-one of the 2,079 or 1,879 targets a bundle already carries. Supply its `sequence`
+one of the 2,079 or 2,279 targets a bundle already carries. Supply its `sequence`
 instead and the tool embeds it with the same ESM2 recipe the models were built on,
 fits your trees on it, and writes it into the output bundle's sequence vectors and
 target index, so it is servable afterwards like any other target.
