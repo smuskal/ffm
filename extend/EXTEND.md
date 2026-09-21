@@ -10,12 +10,12 @@ bundle's own manifest:
 
 | | compound preference | target preference |
 |---|---|---|
-| bundle | `lsl_v2_stratified` | `xfam_v1` |
+| bundle | `lsl_v2_stratified` | `xfam_v2_samefamily` |
 | layout | LSL, `[ ligand A \| sequence \| ligand B ]` | SLS, `[ sequence A \| ligand \| sequence B ]` |
 | the question | which of two compounds a target prefers | which of two targets a compound prefers |
 
     python ffm_extend.py --base ./lsl_v2_stratified --data mine.csv --out ./mine_lsl
-    python ffm_extend.py --base ./xfam_v1           --data mine.csv --out ./mine_sls
+    python ffm_extend.py --base ./xfam_v2_samefamily --data mine.csv --out ./mine_sls
 
 The base bundle is opened read-only and is never modified. The output is a
 complete bundle: it carries the merged forest under the base model's own
@@ -25,7 +25,7 @@ filename, so the bundle's `predict.py` loads it with no code change.
 
 # Your targets do not have to be on the roster
 
-The released models serve 2,079 and 1,879 targets. You are not limited to those.
+The released models serve 2,079 and 2,279 targets. You are not limited to those.
 
 **Name a target by `accession`** to use one the bundle already carries.
 **Supply its `sequence`** to add a target the released model has never seen. The
@@ -76,10 +76,10 @@ be almost entirely unpairable for one of the two layouts.
 
     smiles,accession_a,accession_b,pic50_a,pic50_b,relation_a,relation_b,assay_measure
 
-The released target preference model was fitted and measured on pairs of targets
-from different families. Pairs you add from within one family are accepted and
-fitted like any other; measure them on your own held-out comparisons, since the
-released figures describe cross-family pairs.
+The released target preference model measures two kinds of comparison
+separately, two targets from different families and two different targets from
+one family. Keep the two apart when you measure your own extension, as the
+released figures do, and quote each on its own held-out comparisons.
 
 Replace any `accession` with a `sequence` column to add a target off the roster.
 `sequence_a` and `sequence_b` work the same way for target preference, and you can
@@ -165,10 +165,7 @@ The released model reads 0.685 on that holdout and 0.692 on the breadth
 reference. Eighty added trees bought 0.041 on the contributor's own targets with
 no measured loss across the roster.
 
-The same procedure on the target preference model, 6,000 contributor comparisons
-and a 1,200 comparison holdout, moved 0.753 to 0.763 with 40 trees added.
-
-**Both runs used held-out public ChEMBL data.** They show that the
+**That run used held-out public ChEMBL data.** It shows that the
 mechanism works and what the trade-off looks like. What your own data buys depends
 on your data.
 

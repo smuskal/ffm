@@ -11,7 +11,7 @@ into the released forest; our corpus never reaches you and yours never reaches u
 What crosses the boundary is the feature recipe, which this tool carries.
 
     python ffm_extend.py --base ./lsl_v2_stratified --data mine.csv --out ./mine_lsl
-    python ffm_extend.py --base ./xfam_v1           --data mine.csv --out ./mine_sls
+    python ffm_extend.py --base ./xfam_v2_samefamily --data mine.csv --out ./mine_sls
 
 CSV, header required. Unknown columns are ignored.
 

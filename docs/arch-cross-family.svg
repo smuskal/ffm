@@ -232,7 +232,7 @@ L 47.2 36.6
   <text x="850" y="600" text-anchor="end" font-size="16" font-weight="700"
         fill="#ffffff">prefers KCNH2</text>
   <text x="590.0" y="644" text-anchor="middle" font-size="14.5" fill="#17181c">
-    the model prefers <tspan font-weight="700">HRH1 at strength 0.90</tspan>, which is the
+    the model prefers <tspan font-weight="700">HRH1 at strength 0.88</tspan>, which is the
     measured order: the compound is active at a concentration 4.1 log units lower at HRH1</text>
   <text x="590.0" y="666" text-anchor="middle" font-size="12.5" fill="#5b6570">
     Targets are drawn as schematics of their architecture, not as structures.

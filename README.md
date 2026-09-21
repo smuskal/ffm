@@ -6,8 +6,8 @@ Each answers one two-class question, which of the two things given is
 preferred, and attaches one number to the answer: its strength.
 
 ![The two models side by side: preference on the left, one target and two
-compounds; target preference on the right, one compound and two targets from
-different families.](docs/familyfm-pair.png)
+compounds; target preference on the right, one compound and two
+targets.](docs/familyfm-pair.png)
 
 Both answer a question about **preference**, and they differ in whose preference
 is being asked about.
@@ -15,7 +15,7 @@ is being asked about.
 | model | you supply | it answers | row layout | width |
 |---|---|---|---|---|
 | **compound preference, "LSL"** | one target, two compounds | which compound that target prefers | ligand, sequence, ligand | 2,556 |
-| **target preference, "SLS"** | one compound, two targets from different families | which target that compound prefers | sequence, ligand, sequence | 1,998 |
+| **target preference, "SLS"** | one compound, two targets, from different families or from one | which target that compound prefers | sequence, ligand, sequence | 1,998 |
 
 Target preference asks where a compound goes; compound preference asks which
 compound to take there. Comparing two targets against one compound is what
@@ -31,7 +31,7 @@ below is printed with the measured accuracy of its strength band.
 with no install, every target they cover, and the methods behind every number
 here.
 
-**Model release: 13 September 2026.** Trained on **ChEMBL 37 alone**, which is what
+**Model release: 21 September 2026**, target preference version 2. Trained on **ChEMBL 37 alone**, which is what
 makes the weights freely downloadable.
 
 **Add your own data.** Either released model can be extended with measurements
@@ -188,8 +188,12 @@ functional readings as well as binding ones.
 
 ## Target preference, "SLS"
 
-Given **one ligand and two protein targets from different families**, which
-target the ligand prefers.
+Given **one ligand and two protein targets**, which target the ligand prefers.
+The two targets come from **different families** or from **one family**, and the
+two kinds of comparison are fitted together and **measured separately**. There is
+no pooled accuracy for this model anywhere in this repository: the held-out set is
+79 percent same-family, so a
+pooled figure would be dominated by one arm and could rise while the other fell.
 
 ![Olanzapine put to two targets from different protein families: the histamine
 H1 receptor, drawn as a seven-helix bundle in a membrane, and hERG, drawn as four
@@ -200,10 +204,11 @@ which of the two targets the compound prefers.](docs/arch-cross-family.svg)
 
 **The worked case.** Olanzapine put to the histamine H1 receptor, a G
 protein-coupled receptor, and to hERG, a voltage-gated ion channel. Both are real
-measurements from the training data: pKi **8.50** at H1 against **4.44** at hERG,
-so the compound is active at a concentration 4.1 log units lower at H1. The model prefers **H1 at
-strength 0.90**, the measured order. The target pictures are schematics of each protein's
-architecture, not structures.
+measurements from the training data: pKi **8.50** at H1 against
+**4.44** at hERG, so the compound is active at a concentration 4.1
+log units lower at H1. The model prefers **H1 at strength
+0.88**, the measured order. The target pictures are schematics of
+each protein's architecture, not structures.
 
 ```
 SMILES   Cc1cc2c(s1)Nc1ccccc1N=C2N1CCN(C)CC1      olanzapine
@@ -219,8 +224,10 @@ scored on its own and then subtracted.
 
 ### What target preference is for
 
-**Off-target triage and repurposing.** Give it a compound and a panel of targets
-drawn from different families, and it ranks which the compound leans toward.
+**Off-target triage and repurposing** when the panel spans families: give it a
+compound and a set of targets and it ranks which the compound leans toward.
+**Selectivity inside one family** when the two targets share a family label,
+which is the question a chemist asks of a series.
 
 It is **not** a safety or toxicity screen. Breadth across families in this data
 partly records how many assay panels a compound went through rather than how
@@ -232,69 +239,140 @@ do not support.
 Compound-disjoint holdout by InChIKey: **zero ligands appear on both sides**, so
 every held-out comparison involves chemistry the model was never fitted on.
 
+| the question | held-out comparisons | compounds | accuracy |
+|---|---|---|---|
+| two targets from different families | 8,689 | 2,195 | **0.75** |
+| two different targets from one family | 32,738 | 13,343 | **0.78** |
+
 | | |
 |---|---|
-| **Accuracy** | **0.75** on 8,689 held-out comparisons over 2,195 ligands |
-| Targets servable | 1,879 across 34 protein families |
-| Comparisons, total | 89,888 over 22,588 ligands and 290 family pairings |
-| Comparisons fitted on | 81,199 over 20,393 ligands |
+| Targets servable | 2,279 across 34 protein families |
+| Comparisons, total | 423,781: 89,888 across families, 333,893 within one |
+| Comparisons fitted on | 382,354 over 135,852 compounds |
+
+#### What the accuracy is worth
+
+Two weaker answers on the same held-out comparisons: the family labels alone, and
+the same model with the ligand blinded so only the two sequences remain.
+
+| answering with | across families | within one family |
+|---|---|---|
+| a family prior, the family labels alone | 0.66 | 0.50 |
+| the model with the ligand blinded | 0.71 | 0.67 |
+| **the model** | **0.75** | **0.78** |
+
+Inside one family both targets carry the same label, so a family prior is chance
+by construction and every point above 0.50 is earned by the comparison itself.
+The model beats its own sequence-only twin by
+11.2 points within a family against
+4.4 across them: the compound carries
+more of the call inside a family than across one.
 
 #### Accuracy rises with prediction strength
 
-![Accuracy rises from 0.75 answering everything to 0.97 at a strength cutoff of
-0.90, while the share of comparisons still answered falls from 100 percent to 22
-percent.](docs/strength-tradeoff.svg)
+![Across families, accuracy rises from 0.75 answering
+everything to 0.97 at a strength cutoff of 0.90, while
+the share of comparisons still answered falls from 100 percent to
+21 percent.](docs/strength-tradeoff.svg)
+
+![Within one family, accuracy rises from 0.78 answering
+everything to 0.98 at a strength cutoff of 0.90, while
+the share of comparisons still answered falls from 100 percent to
+21 percent.](docs/strength-tradeoff-same.svg)
 
 Strength is max(p, 1 - p) of the returned probability p, so it runs 0.5 to 1.0.
 
-| strength at or above | comparisons kept | accuracy |
-|---|---|---|
-| answer everything | 100% | 0.75 |
-| 0.60 | 74.4% | 0.81 |
-| 0.70 | 52.0% | 0.88 |
-| 0.80 | 35.9% | 0.93 |
-| 0.90 | 22.1% | 0.97 |
+| strength at or above | kept, across families | accuracy | kept, within one family | accuracy |
+|---|---|---|---|---|
+| answer everything | 100.0% | 0.75 | 100.0% | 0.78 |
+| 0.60 | 70.6% | 0.82 | 76.1% | 0.85 |
+| 0.70 | 49.5% | 0.89 | 56.0% | 0.91 |
+| 0.80 | 34.3% | 0.94 | 38.3% | 0.95 |
+| 0.90 | 20.5% | 0.97 | 20.8% | 0.98 |
 
 #### A near-tie is a near-tie
 
-| true separation | comparisons | accuracy |
+| true separation | across families | within one family |
 |---|---|---|
-| under half a log | 2,283 | 0.57 |
-| half a log to one log | 1,766 | 0.70 |
-| one to two logs | 2,359 | 0.80 |
-| beyond two logs | 2,281 | 0.92 |
+| under half a log | 0.59 on 2,264 | 0.64 on 11,228 |
+| half a log to one log | 0.69 on 1,783 | 0.80 on 7,546 |
+| one to two logs | 0.79 on 2,354 | 0.88 on 8,710 |
+| beyond two logs | 0.91 on 2,288 | 0.92 on 5,254 |
+
+#### Within one family, family by family
+
+A comparison is filed under the family its two targets share. The last column is
+how many distinct proteins appear on either side of that family's held-out
+comparisons, and it is the one to read beside the accuracy: a family can carry
+thousands of comparisons over a handful of proteins, and then the figure
+describes those proteins rather than the family.
+
+| family | held out | accuracy | proteins behind it |
+|---|---|---|---|
+| Family A G protein-coupled receptor | 5,412 | 0.76 | 160 |
+| Kinase | 4,979 | 0.73 | 360 |
+| Protease | 3,889 | 0.81 | 134 |
+| Lyase | 2,792 | 0.77 | 15 |
+| Eraser | 2,315 | 0.79 | 36 |
+| Transferase | 1,993 | 0.85 | 90 |
+| Cytochrome P450 | 1,755 | 0.76 | 28 |
+| Nuclear receptor | 1,601 | 0.81 | 33 |
+| Electrochemical transporter | 1,207 | 0.79 | 45 |
+| Oxidoreductase | 1,137 | 0.79 | 86 |
+| Phosphodiesterase | 938 | 0.80 | 22 |
+| Reader | 924 | 0.83 | 53 |
+| Toll-like and Il-1 receptors | 922 | 0.94 | 6 |
+| Voltage-gated ion channel | 811 | 0.81 | 48 |
+| Hydrolase | 600 | 0.77 | 70 |
+| Phosphatase | 575 | 0.74 | 40 |
+| Ligand-gated ion channel | 250 | 0.69 | 31 |
+
+**Kinase is the largest and the hardest of these, and that is a finding rather
+than a shortfall.** Kinases resemble one another more than members of most
+families do, so telling two of them apart for one compound is the harder
+question, and it is asked here on more held-out comparisons and more proteins
+than for any other family.
+
+These 13 families carry within-family data but fewer than 200 held-out
+comparisons, so they are marked rather than scored and no accuracy is published
+for them: Primary active transporter (170), Writer (143), Other ion channel (112), Family C G protein-coupled receptor (85), Fatty acid binding protein family (62), Family B G protein-coupled receptor (50), Isomerase (39), Aminoacyltransferase (15), Transmembrane 1-electron transfer carriers (8), Calcium channel auxiliary subunit alpha2delta family (3), Taste family G protein-coupled receptor (3), Ligase (1), Frizzled family G protein-coupled receptor (1). The
+remaining families on the roster carry no within-family comparisons.
 
 #### Some pairings are much harder than others
 
-Across pairings carrying at least 100 held-out comparisons, strongest first:
+Comparisons between two families, over pairings carrying at least 100 held-out
+comparisons, strongest first:
 
 | pairing | comparisons | accuracy |
 |---|---|---|
-| Kinase against Voltage-gated ion channel | 144 | 0.93 |
-| Cytochrome P450 against Kinase | 278 | 0.90 |
-| Cytochrome P450 against Oxidoreductase | 105 | 0.89 |
+| Kinase against Voltage-gated ion channel | 301 | 0.94 |
+| Cytochrome P450 against Kinase | 561 | 0.89 |
+| Family A G protein-coupled receptor against Voltage-gated ion channel | 371 | 0.84 |
 
 and the hardest:
 
 | pairing | comparisons | accuracy |
 |---|---|---|
-| Electrochemical transporter against Family A G protein-coupled receptor | 531 | 0.66 |
-| Cytochrome P450 against Voltage-gated ion channel | 121 | 0.74 |
-| Eraser against Kinase | 121 | 0.74 |
+| Hydrolase against Kinase | 171 | 0.58 |
+| Family A G protein-coupled receptor against Ligand-gated ion channel | 118 | 0.60 |
+| Electrochemical transporter against Primary active transporter | 119 | 0.64 |
 
 Pairings with fewer than 30 held-out comparisons are not quoted, here or in the
 manifest.
 
 #### By endpoint, target preference
 
-| endpoint | comparisons | accuracy |
+| endpoint | across families | within one family |
 |---|---|---|
-| IC50 | 6,577 | 0.78 |
-| Ki | 1,440 | 0.70 |
-| Kd | 558 | 0.59 |
-| EC50 | 114 | 0.69 |
+| IC50 | 0.78 on 6,577 | 0.80 on 18,533 |
+| Ki | 0.70 on 1,440 | 0.78 on 8,825 |
+| Kd | 0.57 on 558 | 0.67 on 2,492 |
+| EC50 | 0.66 on 114 | 0.81 on 2,815 |
+| Kb | no comparisons | 0.78 on 73 |
 
-The Kd row is thin and weak; do not lean on it.
+Kd is the weakest endpoint in both arms; do not lean on it. Kb appears only
+within a family: two agonist readings of one compound at two targets are rarely
+published across families.
 
 ## Install
 

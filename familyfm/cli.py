@@ -21,7 +21,7 @@ import argparse, importlib.util, json, os, sys
 
 _MODELS = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))),
                        "ffm-models")
-DEFAULT_BUNDLE = os.environ.get("FFM_BUNDLE", os.path.join(_MODELS, "xfam_v1"))
+DEFAULT_BUNDLE = os.environ.get("FFM_BUNDLE", os.path.join(_MODELS, "xfam_v2_samefamily"))
 # the preference comparator is a separate bundle with its own forest and its own
 # measured table; the two are never mixed
 DEFAULT_PREFERENCE_BUNDLE = os.environ.get(
@@ -52,6 +52,22 @@ def band(strength, cumulative):
             best = (float(cut), cumulative[cut]["accuracy"])
             break
     return best or (0.5, cumulative["0.50"]["accuracy"])
+
+
+def shares_family(fa, fb):
+    """Two targets are a same-family pair when their family labels intersect.
+    Labels can be piped, such as Reader|Writer."""
+    return bool(set((fa or "").split("|")) & set((fb or "").split("|")) - {""})
+
+
+def arm_tables(manifest):
+    """The measured tables for each kind of target pair. A bundle fitted on both
+    kinds reports them separately and they are never pooled; an older bundle has
+    one cross-family table, which serves both keys."""
+    by = manifest.get("MEASURED_PERFORMANCE_BY_PAIR_TYPE")
+    if by:
+        return by
+    return {"cross": manifest["MEASURED_PERFORMANCE"]}
 
 
 def main(argv=None):
@@ -90,8 +106,10 @@ def main(argv=None):
                           else DEFAULT_BUNDLE)
     a.bundle = bundle
     P, m = load_bundle(bundle)
-    perf = json.load(open(os.path.join(a.bundle, "MANIFEST.json")))["MEASURED_PERFORMANCE"]
+    manifest = json.load(open(os.path.join(a.bundle, "MANIFEST.json")))
+    perf = manifest["MEASURED_PERFORMANCE"]
     cum = perf["strength_cumulative"]
+    arms = arm_tables(manifest)
 
     if a.cmd in LIGAND_CMDS:
         if a.target not in set(P.targets(m)):
@@ -155,24 +173,47 @@ def main(argv=None):
         sys.exit("Not in this model: %s\nTargets are UniProt accessions. "
                  "Run `ffm targets` to list them." % ", ".join(unknown))
 
+    def arm_of(fa, fb):
+        kind = "same" if shares_family(fa, fb) else "cross"
+        if kind not in arms:
+            sys.exit("This bundle carries no measured table for %s-family pairs."
+                     % kind)
+        return kind
+
+    def headline(kind):
+        t = arms[kind]
+        return ("%s: %.2f on %s held-out comparisons"
+                % ("two targets from different families" if kind == "cross"
+                   else "two different targets in one family",
+                   t["accuracy"], "{:,}".format(t["held_out_comparisons"])))
+
     if a.cmd == "compare":
         p = P.compare_targets(m, a.smiles, a.a, a.b)
         s = max(p, 1 - p)
-        cut, acc = band(s, cum)
-        print("%s (%s)  vs  %s (%s)" % (a.a, P.family_of(m, a.a), a.b, P.family_of(m, a.b)))
+        fa, fb = P.family_of(m, a.a), P.family_of(m, a.b)
+        kind = arm_of(fa, fb)
+        cut, acc = band(s, arms[kind]["strength_cumulative"])
+        print("%s (%s)  vs  %s (%s)" % (a.a, fa, a.b, fb))
         print("  prefers %s at strength %.2f" % (a.a if p >= 0.5 else a.b, s))
         print("  that band is right %.2f of the time" % acc)
+        print("  measured on %s" % headline(kind))
         return 0
 
+    # A panel can mix both kinds of pair. Each row's band is read from the arm
+    # its comparisons fall in; where a target's comparisons fall in both, the
+    # lower of the two band accuracies is printed, never a blend.
+    fams = {x: P.family_of(m, x) for x in asked}
+    kinds = {x: {arm_of(fams[x], fams[y]) for y in asked if y != x} for x in asked}
     ranked = P.rank_targets(m, a.smiles, asked)
     print("%-10s %-38s %8s %9s  %s" % ("TARGET", "FAMILY", "WIN", "STRENGTH", "BAND IS RIGHT"))
     for row in ranked:
         acc_, fam, win, st = row[0], row[1], float(row[2]), float(row[3])
-        _cut, bacc = band(st, cum)
+        bacc = min(band(st, arms[k]["strength_cumulative"])[1] for k in kinds[acc_])
         print("%-10s %-38s %8.2f %9.2f  %.2f" % (acc_, (fam or ""), win, st, bacc))
-    print("\nHeadline %.2f on %s held-out comparisons."
-          % (perf["accuracy"], "{:,}".format(perf["held_out_comparisons"])),
-          file=sys.stderr)
+    print("", file=sys.stderr)
+    for kind in ("cross", "same"):
+        if any(kind in k for k in kinds.values()):
+            print("Measured on %s." % headline(kind), file=sys.stderr)
     return 0
 
 

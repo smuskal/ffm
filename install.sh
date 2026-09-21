@@ -147,9 +147,9 @@ PY
 
 if [ "$WANT" = "both" ] || [ "$WANT" = "selectivity" ]; then
   echo "== target-preference bundle"
-  fetch target xfam_v1.tar.gz xfam_v1 familyfm_selectivity.joblib
+  fetch target xfam_v2.tar.gz xfam_v2_samefamily familyfm_selectivity.joblib
   echo "== proving the target-preference model works"
-  verify xfam_v1 familyfm_selectivity.joblib selectivity
+  verify xfam_v2_samefamily familyfm_selectivity.joblib selectivity
 fi
 
 if [ "$WANT" = "both" ] || [ "$WANT" = "preference" ]; then

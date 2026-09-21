@@ -1,4 +1,7 @@
-"""Measurements to cross-family SLS comparisons.
+"""Measurements to cross-family SLS comparisons, the cross-family arm alone.
+
+The released model is fitted on both arms, formed by pairs_family_mode.py with
+`--mode both`. This module forms the cross-family arm on its own.
 
 One ligand, two targets, and the question is which target the compound prefers.
 Four rules make the comparison fair, and all four came out of the kinase and GPCR

@@ -1,10 +1,12 @@
 """Inference API shipped inside every FamilyFM bundle.
 
-One question: given one ligand and two protein targets from different families,
-which target the compound prefers. The answer is a probability, never an affinity.
+One question: given one ligand and two protein targets, from two different
+families or two different targets in one family, which target the compound
+prefers. The answer is a probability, never an affinity. The manifest measures
+the two kinds of pair separately, in MEASURED_PERFORMANCE_BY_PAIR_TYPE.
 
     import importlib.util, sys
-    B = "ffm-models/xfam_v1"        # wherever install.sh put the bundle
+    B = "ffm-models/xfam_v2_samefamily"   # wherever install.sh put the bundle
     spec = importlib.util.spec_from_file_location("fp", B + "/predict.py")
     fp = importlib.util.module_from_spec(spec); sys.modules["fp"] = fp
     sys.path.insert(0, B); spec.loader.exec_module(fp)

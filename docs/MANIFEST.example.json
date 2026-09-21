@@ -1,17 +1,17 @@
 {
  "name": "familyfm_xfam_selectivity",
- "layout": "SLS, cross family",
- "question": "one ligand, two targets from different families: which target the compound prefers",
+ "layout": "SLS, cross family and same family",
+ "question": "one ligand, two targets: which target the ligand prefers, that is where it is active at the lower concentration. Two kinds of comparison are fitted together and reported separately: across families (the two targets share no family label) and within one family (two different targets sharing a family label)",
  "feature_order": "[ sequence A 480 | ligand 1038 | sequence B 480 ] = 1998",
  "source": "ChEMBL 37",
  "training": {
-  "pairs_file": "data/pairs/all.csv",
-  "fit_comparisons": 81199,
-  "rows_after_swap": 162398,
+  "pairs_file": "data/pairs/all_both.csv",
+  "fit_comparisons": 382354,
+  "rows_after_swap": 764708,
   "label_balance": 0.5,
-  "fit_ligands": 20393,
-  "targets": 1877,
-  "fit_seconds": 37
+  "fit_ligands": 135852,
+  "targets": 2277,
+  "fit_seconds": 239
  },
  "split_basis": "compound-disjoint by InChIKey, blake2b, 10% held out",
  "hyperparameters": {
@@ -21,208 +21,418 @@
   "random_state": 0
  },
  "MEASURED_PERFORMANCE": {
-  "held_out_comparisons": 8689,
-  "held_out_ligands": 2195,
-  "accuracy": 0.7496,
+  "held_out_comparisons": 41427,
+  "held_out_ligands": 14719,
+  "accuracy": 0.7768,
+  "family_prior_accuracy": 0.5308,
+  "ligand_blind_accuracy": 0.6793,
   "strength_cumulative": {
    "0.50": {
     "coverage": 1.0,
-    "accuracy": 0.7496,
-    "n": 8689
+    "accuracy": 0.7768,
+    "n": 41427
    },
    "0.60": {
-    "coverage": 0.7435,
-    "accuracy": 0.8146,
-    "n": 6460
+    "coverage": 0.7494,
+    "accuracy": 0.8481,
+    "n": 31047
    },
    "0.70": {
-    "coverage": 0.5203,
-    "accuracy": 0.8772,
-    "n": 4521
+    "coverage": 0.546,
+    "accuracy": 0.9084,
+    "n": 22618
    },
    "0.80": {
-    "coverage": 0.359,
-    "accuracy": 0.9327,
-    "n": 3119
+    "coverage": 0.3744,
+    "accuracy": 0.951,
+    "n": 15509
    },
    "0.90": {
-    "coverage": 0.2214,
-    "accuracy": 0.9657,
-    "n": 1924
+    "coverage": 0.2077,
+    "accuracy": 0.9794,
+    "n": 8605
    }
   },
   "by_endpoint": {
    "EC50": {
-    "n": 114,
-    "accuracy": 0.693
+    "n": 2929,
+    "accuracy": 0.8037
    },
    "IC50": {
-    "n": 6577,
-    "accuracy": 0.7759
+    "n": 25110,
+    "accuracy": 0.7935
+   },
+   "Kb": {
+    "n": 73,
+    "accuracy": 0.7808
    },
    "Kd": {
-    "n": 558,
-    "accuracy": 0.5878
+    "n": 3050,
+    "accuracy": 0.6515
    },
    "Ki": {
-    "n": 1440,
-    "accuracy": 0.6965
+    "n": 10265,
+    "accuracy": 0.7654
    }
   },
   "by_family_pair": {
+   "Cytochrome P450 | Cytochrome P450": {
+    "n": 1755,
+    "accuracy": 0.7573
+   },
    "Cytochrome P450 | Electrochemical transporter": {
-    "n": 48,
-    "accuracy": 0.9167
+    "n": 49,
+    "accuracy": 0.7959
    },
    "Cytochrome P450 | Eraser": {
     "n": 33,
-    "accuracy": 0.7576
+    "accuracy": 0.6364
    },
    "Cytochrome P450 | Family A G protein-coupled receptor": {
-    "n": 175,
-    "accuracy": 0.7943
+    "n": 193,
+    "accuracy": 0.7668
    },
    "Cytochrome P450 | Kinase": {
-    "n": 278,
-    "accuracy": 0.8993
-   },
-   "Cytochrome P450 | Nuclear receptor": {
-    "n": 33,
-    "accuracy": 0.8788
+    "n": 281,
+    "accuracy": 0.8826
    },
    "Cytochrome P450 | Oxidoreductase": {
-    "n": 105,
-    "accuracy": 0.8857
+    "n": 96,
+    "accuracy": 0.8958
    },
    "Cytochrome P450 | Primary active transporter": {
-    "n": 32,
-    "accuracy": 0.8438
+    "n": 33,
+    "accuracy": 0.7576
    },
    "Cytochrome P450 | Protease": {
-    "n": 48,
-    "accuracy": 0.8125
+    "n": 44,
+    "accuracy": 0.8864
    },
    "Cytochrome P450 | Transferase": {
-    "n": 44,
-    "accuracy": 0.9318
+    "n": 30,
+    "accuracy": 0.9667
    },
    "Cytochrome P450 | Voltage-gated ion channel": {
-    "n": 121,
-    "accuracy": 0.7438
+    "n": 114,
+    "accuracy": 0.7018
+   },
+   "Electrochemical transporter | Electrochemical transporter": {
+    "n": 1207,
+    "accuracy": 0.7846
    },
    "Electrochemical transporter | Family A G protein-coupled receptor": {
-    "n": 531,
-    "accuracy": 0.6554
+    "n": 521,
+    "accuracy": 0.6756
    },
    "Electrochemical transporter | Primary active transporter": {
-    "n": 59,
-    "accuracy": 0.5932
-   },
-   "Electrochemical transporter | Protease": {
-    "n": 36,
-    "accuracy": 0.6389
+    "n": 61,
+    "accuracy": 0.623
    },
    "Electrochemical transporter | Voltage-gated ion channel": {
-    "n": 49,
-    "accuracy": 0.8571
+    "n": 52,
+    "accuracy": 0.9423
+   },
+   "Eraser | Eraser": {
+    "n": 2315,
+    "accuracy": 0.7883
    },
    "Eraser | Kinase": {
-    "n": 121,
-    "accuracy": 0.7438
+    "n": 117,
+    "accuracy": 0.6838
    },
    "Eraser | Oxidoreductase": {
-    "n": 73,
-    "accuracy": 0.7945
+    "n": 87,
+    "accuracy": 0.7816
    },
    "Eraser | Reader": {
-    "n": 31,
-    "accuracy": 0.5806
+    "n": 30,
+    "accuracy": 0.4667
    },
    "Eraser | Transferase": {
-    "n": 42,
-    "accuracy": 0.7857
+    "n": 43,
+    "accuracy": 0.6744
+   },
+   "Family A G protein-coupled receptor | Family A G protein-coupled receptor": {
+    "n": 5412,
+    "accuracy": 0.7603
    },
    "Family A G protein-coupled receptor | Kinase": {
-    "n": 74,
-    "accuracy": 0.7027
+    "n": 61,
+    "accuracy": 0.541
    },
    "Family A G protein-coupled receptor | Ligand-gated ion channel": {
-    "n": 67,
-    "accuracy": 0.6119
-   },
-   "Family A G protein-coupled receptor | Primary active transporter": {
-    "n": 35,
-    "accuracy": 0.8571
-   },
-   "Family A G protein-coupled receptor | Voltage-gated ion channel": {
-    "n": 180,
-    "accuracy": 0.8778
-   },
-   "Hydrolase | Kinase": {
-    "n": 70,
-    "accuracy": 0.7
-   },
-   "Hydrolase | Oxidoreductase": {
-    "n": 41,
-    "accuracy": 0.561
-   },
-   "Hydrolase | Protease": {
-    "n": 50,
-    "accuracy": 0.82
-   },
-   "Isomerase | Kinase": {
-    "n": 34,
-    "accuracy": 0.2353
-   },
-   "Kinase | Oxidoreductase": {
-    "n": 67,
-    "accuracy": 0.6119
-   },
-   "Kinase | Reader": {
-    "n": 32,
-    "accuracy": 0.8438
-   },
-   "Kinase | Transferase": {
-    "n": 775,
-    "accuracy": 0.7484
-   },
-   "Kinase | Voltage-gated ion channel": {
-    "n": 144,
-    "accuracy": 0.9306
+    "n": 62,
+    "accuracy": 0.629
    },
    "Family A G protein-coupled receptor | Oxidoreductase": {
-    "n": 43,
-    "accuracy": 0.814
+    "n": 32,
+    "accuracy": 0.7812
+   },
+   "Family A G protein-coupled receptor | Primary active transporter": {
+    "n": 31,
+    "accuracy": 0.871
+   },
+   "Family A G protein-coupled receptor | Voltage-gated ion channel": {
+    "n": 188,
+    "accuracy": 0.8404
+   },
+   "Family B G protein-coupled receptor | Family B G protein-coupled receptor": {
+    "n": 50,
+    "accuracy": 0.8
+   },
+   "Family C G protein-coupled receptor | Family C G protein-coupled receptor": {
+    "n": 85,
+    "accuracy": 0.8824
+   },
+   "Fatty acid binding protein family | Fatty acid binding protein family": {
+    "n": 62,
+    "accuracy": 0.8065
+   },
+   "Hydrolase | Hydrolase": {
+    "n": 600,
+    "accuracy": 0.7667
+   },
+   "Hydrolase | Kinase": {
+    "n": 77,
+    "accuracy": 0.5455
+   },
+   "Hydrolase | Oxidoreductase": {
+    "n": 44,
+    "accuracy": 0.7273
+   },
+   "Hydrolase | Protease": {
+    "n": 64,
+    "accuracy": 0.8281
+   },
+   "Isomerase | Isomerase": {
+    "n": 39,
+    "accuracy": 0.8205
+   },
+   "Isomerase | Kinase": {
+    "n": 30,
+    "accuracy": 0.1667
+   },
+   "Kinase | Kinase": {
+    "n": 4979,
+    "accuracy": 0.7329
+   },
+   "Kinase | Oxidoreductase": {
+    "n": 74,
+    "accuracy": 0.7297
+   },
+   "Kinase | Transferase": {
+    "n": 785,
+    "accuracy": 0.758
+   },
+   "Kinase | Voltage-gated ion channel": {
+    "n": 163,
+    "accuracy": 0.9448
+   },
+   "Ligand-gated ion channel | Ligand-gated ion channel": {
+    "n": 250,
+    "accuracy": 0.688
+   },
+   "Lyase | Lyase": {
+    "n": 2792,
+    "accuracy": 0.7701
+   },
+   "Nuclear receptor | Nuclear receptor": {
+    "n": 1601,
+    "accuracy": 0.8089
+   },
+   "Other ion channel | Other ion channel": {
+    "n": 112,
+    "accuracy": 0.8929
+   },
+   "Oxidoreductase | Oxidoreductase": {
+    "n": 1137,
+    "accuracy": 0.7863
+   },
+   "Phosphatase | Phosphatase": {
+    "n": 575,
+    "accuracy": 0.7409
+   },
+   "Phosphodiesterase | Phosphodiesterase": {
+    "n": 938,
+    "accuracy": 0.7953
+   },
+   "Primary active transporter | Primary active transporter": {
+    "n": 169,
+    "accuracy": 0.7337
+   },
+   "Electrochemical transporter | Protease": {
+    "n": 31,
+    "accuracy": 0.4839
+   },
+   "Protease | Protease": {
+    "n": 3889,
+    "accuracy": 0.8141
    },
    "Protease | Voltage-gated ion channel": {
-    "n": 33,
-    "accuracy": 0.9394
+    "n": 34,
+    "accuracy": 0.9118
+   },
+   "Kinase | Reader": {
+    "n": 35,
+    "accuracy": 0.8857
+   },
+   "Reader | Reader": {
+    "n": 897,
+    "accuracy": 0.8317
+   },
+   "Toll-like and Il-1 receptors | Toll-like and Il-1 receptors": {
+    "n": 922,
+    "accuracy": 0.9382
+   },
+   "Transferase | Transferase": {
+    "n": 1993,
+    "accuracy": 0.846
+   },
+   "Voltage-gated ion channel | Voltage-gated ion channel": {
+    "n": 811,
+    "accuracy": 0.8064
+   },
+   "Writer | Writer": {
+    "n": 109,
+    "accuracy": 0.7982
    }
   },
   "gap_strata": {
    "under 0.5 log": {
-    "n": 2283,
-    "accuracy": 0.5725
+    "n": 13492,
+    "accuracy": 0.6302
    },
    "0.5 to 1 log": {
-    "n": 1766,
-    "accuracy": 0.7005
+    "n": 9329,
+    "accuracy": 0.7753
    },
    "1 to 2 logs": {
-    "n": 2359,
-    "accuracy": 0.7974
+    "n": 11064,
+    "accuracy": 0.8592
    },
    "over 2 logs": {
-    "n": 2281,
-    "accuracy": 0.9154
+    "n": 7542,
+    "accuracy": 0.9199
    }
-  }
+  },
+  "WARNING": "the figures in this block pool 8,689 cross-family with 32,738 same-family comparisons and must never be quoted. Use MEASURED_PERFORMANCE_BY_PAIR_TYPE.",
+  "family_prior_accuracy_note": "0.5308 is a pooled artefact: the family prior is meaningless inside one family. Per arm it is 0.6574 cross and 0.4972 same."
  },
  "environment": {
   "python": "3.10.15",
   "numpy": "2.2.6",
   "sklearn": "1.7.2"
  },
- "model_sha256": "e909978f10a6e9c528d71d0e3b2cc4ff33267fddf3bd6cdb856d2f2fb16e46bc",
- "targets_servable": 1879
+ "model_sha256": "46f291a5f6ba3f518e084ce871c3416e1a195fb8b30146db10e619d4943feab0",
+ "targets_servable": 2279,
+ "MEASURED_PERFORMANCE_BY_PAIR_TYPE": {
+  "cross": {
+   "held_out_comparisons": 8689,
+   "held_out_ligands": 2195,
+   "accuracy": 0.7496,
+   "family_prior_accuracy": 0.6574,
+   "ligand_blind_accuracy": 0.7054,
+   "strength_cumulative": {
+    "0.50": {
+     "coverage": 1.0,
+     "accuracy": 0.7496,
+     "n": 8689
+    },
+    "0.60": {
+     "coverage": 0.7061,
+     "accuracy": 0.821,
+     "n": 6135
+    },
+    "0.70": {
+     "coverage": 0.4949,
+     "accuracy": 0.8863,
+     "n": 4300
+    },
+    "0.80": {
+     "coverage": 0.343,
+     "accuracy": 0.9372,
+     "n": 2980
+    },
+    "0.90": {
+     "coverage": 0.2053,
+     "accuracy": 0.9686,
+     "n": 1784
+    }
+   },
+   "by_endpoint": {
+    "EC50": {
+     "n": 114,
+     "accuracy": 0.6579
+    },
+    "IC50": {
+     "n": 6577,
+     "accuracy": 0.7774
+    },
+    "Kd": {
+     "n": 558,
+     "accuracy": 0.5717
+    },
+    "Ki": {
+     "n": 1440,
+     "accuracy": 0.6986
+    }
+   }
+  },
+  "same": {
+   "held_out_comparisons": 32738,
+   "held_out_ligands": 13343,
+   "accuracy": 0.784,
+   "family_prior_accuracy": 0.4972,
+   "ligand_blind_accuracy": 0.6724,
+   "strength_cumulative": {
+    "0.50": {
+     "coverage": 1.0,
+     "accuracy": 0.784,
+     "n": 32738
+    },
+    "0.60": {
+     "coverage": 0.761,
+     "accuracy": 0.8548,
+     "n": 24912
+    },
+    "0.70": {
+     "coverage": 0.5595,
+     "accuracy": 0.9136,
+     "n": 18318
+    },
+    "0.80": {
+     "coverage": 0.3827,
+     "accuracy": 0.9543,
+     "n": 12529
+    },
+    "0.90": {
+     "coverage": 0.2084,
+     "accuracy": 0.9823,
+     "n": 6821
+    }
+   },
+   "by_endpoint": {
+    "EC50": {
+     "n": 2815,
+     "accuracy": 0.8096
+    },
+    "IC50": {
+     "n": 18533,
+     "accuracy": 0.7992
+    },
+    "Kb": {
+     "n": 73,
+     "accuracy": 0.7808
+    },
+    "Kd": {
+     "n": 2492,
+     "accuracy": 0.6693
+    },
+    "Ki": {
+     "n": 8825,
+     "accuracy": 0.7763
+    }
+   }
+  }
+ }
 }

@@ -1,4 +1,4 @@
-"""ChEMBL 37 to one measurement per row, scoped for cross-family target preference.
+"""ChEMBL 37 to one measurement per row, scoped for target preference.
 
 Built from ChEMBL 37.
 
