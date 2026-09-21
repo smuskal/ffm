@@ -358,7 +358,9 @@ and the hardest:
 | Electrochemical transporter against Primary active transporter | 119 | 0.64 |
 
 Pairings with fewer than 30 held-out comparisons are not quoted, here or in the
-manifest.
+manifest. Each row counts both orientations of the pairing: a table built before
+21 September 2026 kept only the first orientation it met, so every count in it
+was about half the truth.
 
 #### By endpoint, target preference
 

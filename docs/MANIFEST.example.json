@@ -78,223 +78,373 @@
   "by_family_pair": {
    "Cytochrome P450 | Cytochrome P450": {
     "n": 1755,
-    "accuracy": 0.7573
+    "accuracy": 0.7573,
+    "pair_type": "same"
    },
    "Cytochrome P450 | Electrochemical transporter": {
-    "n": 49,
-    "accuracy": 0.7959
+    "n": 102,
+    "accuracy": 0.8235,
+    "pair_type": "cross"
    },
    "Cytochrome P450 | Eraser": {
-    "n": 33,
-    "accuracy": 0.6364
+    "n": 64,
+    "accuracy": 0.7344,
+    "pair_type": "cross"
    },
    "Cytochrome P450 | Family A G protein-coupled receptor": {
-    "n": 193,
-    "accuracy": 0.7668
+    "n": 364,
+    "accuracy": 0.7637,
+    "pair_type": "cross"
+   },
+   "Cytochrome P450 | Hydrolase": {
+    "n": 45,
+    "accuracy": 0.6889,
+    "pair_type": "cross"
    },
    "Cytochrome P450 | Kinase": {
-    "n": 281,
-    "accuracy": 0.8826
+    "n": 561,
+    "accuracy": 0.8948,
+    "pair_type": "cross"
+   },
+   "Cytochrome P450 | Nuclear receptor": {
+    "n": 56,
+    "accuracy": 0.875,
+    "pair_type": "cross"
    },
    "Cytochrome P450 | Oxidoreductase": {
-    "n": 96,
-    "accuracy": 0.8958
+    "n": 191,
+    "accuracy": 0.801,
+    "pair_type": "cross"
    },
    "Cytochrome P450 | Primary active transporter": {
-    "n": 33,
-    "accuracy": 0.7576
+    "n": 61,
+    "accuracy": 0.8197,
+    "pair_type": "cross"
    },
    "Cytochrome P450 | Protease": {
-    "n": 44,
-    "accuracy": 0.8864
+    "n": 99,
+    "accuracy": 0.8485,
+    "pair_type": "cross"
    },
    "Cytochrome P450 | Transferase": {
-    "n": 30,
-    "accuracy": 0.9667
+    "n": 78,
+    "accuracy": 0.9103,
+    "pair_type": "cross"
    },
    "Cytochrome P450 | Voltage-gated ion channel": {
-    "n": 114,
-    "accuracy": 0.7018
+    "n": 256,
+    "accuracy": 0.7305,
+    "pair_type": "cross"
    },
    "Electrochemical transporter | Electrochemical transporter": {
     "n": 1207,
-    "accuracy": 0.7846
+    "accuracy": 0.7846,
+    "pair_type": "same"
    },
    "Electrochemical transporter | Family A G protein-coupled receptor": {
-    "n": 521,
-    "accuracy": 0.6756
+    "n": 1016,
+    "accuracy": 0.6752,
+    "pair_type": "cross"
+   },
+   "Electrochemical transporter | Kinase": {
+    "n": 36,
+    "accuracy": 0.8056,
+    "pair_type": "cross"
    },
    "Electrochemical transporter | Primary active transporter": {
-    "n": 61,
-    "accuracy": 0.623
+    "n": 119,
+    "accuracy": 0.6387,
+    "pair_type": "cross"
+   },
+   "Electrochemical transporter | Protease": {
+    "n": 59,
+    "accuracy": 0.5932,
+    "pair_type": "cross"
    },
    "Electrochemical transporter | Voltage-gated ion channel": {
-    "n": 52,
-    "accuracy": 0.9423
+    "n": 87,
+    "accuracy": 0.8851,
+    "pair_type": "cross"
    },
    "Eraser | Eraser": {
     "n": 2315,
-    "accuracy": 0.7883
+    "accuracy": 0.7883,
+    "pair_type": "same"
    },
    "Eraser | Kinase": {
-    "n": 117,
-    "accuracy": 0.6838
+    "n": 238,
+    "accuracy": 0.6933,
+    "pair_type": "cross"
    },
    "Eraser | Oxidoreductase": {
-    "n": 87,
-    "accuracy": 0.7816
+    "n": 154,
+    "accuracy": 0.7792,
+    "pair_type": "cross"
+   },
+   "Eraser | Phosphodiesterase": {
+    "n": 41,
+    "accuracy": 0.9512,
+    "pair_type": "cross"
    },
    "Eraser | Reader": {
-    "n": 30,
-    "accuracy": 0.4667
+    "n": 60,
+    "accuracy": 0.5333,
+    "pair_type": "cross"
    },
    "Eraser | Transferase": {
-    "n": 43,
-    "accuracy": 0.6744
+    "n": 84,
+    "accuracy": 0.75,
+    "pair_type": "cross"
+   },
+   "Eraser | Voltage-gated ion channel": {
+    "n": 33,
+    "accuracy": 0.8788,
+    "pair_type": "cross"
    },
    "Family A G protein-coupled receptor | Family A G protein-coupled receptor": {
     "n": 5412,
-    "accuracy": 0.7603
+    "accuracy": 0.7603,
+    "pair_type": "same"
+   },
+   "Family A G protein-coupled receptor | Family B G protein-coupled receptor": {
+    "n": 54,
+    "accuracy": 0.5,
+    "pair_type": "cross"
+   },
+   "Family A G protein-coupled receptor | Hydrolase": {
+    "n": 53,
+    "accuracy": 0.566,
+    "pair_type": "cross"
    },
    "Family A G protein-coupled receptor | Kinase": {
-    "n": 61,
-    "accuracy": 0.541
+    "n": 131,
+    "accuracy": 0.6412,
+    "pair_type": "cross"
    },
    "Family A G protein-coupled receptor | Ligand-gated ion channel": {
-    "n": 62,
-    "accuracy": 0.629
+    "n": 118,
+    "accuracy": 0.6017,
+    "pair_type": "cross"
+   },
+   "Family A G protein-coupled receptor | Nuclear receptor": {
+    "n": 49,
+    "accuracy": 0.7347,
+    "pair_type": "cross"
    },
    "Family A G protein-coupled receptor | Oxidoreductase": {
-    "n": 32,
-    "accuracy": 0.7812
+    "n": 64,
+    "accuracy": 0.7812,
+    "pair_type": "cross"
    },
    "Family A G protein-coupled receptor | Primary active transporter": {
-    "n": 31,
-    "accuracy": 0.871
+    "n": 50,
+    "accuracy": 0.88,
+    "pair_type": "cross"
    },
    "Family A G protein-coupled receptor | Voltage-gated ion channel": {
-    "n": 188,
-    "accuracy": 0.8404
+    "n": 371,
+    "accuracy": 0.8356,
+    "pair_type": "cross"
+   },
+   "Family A G protein-coupled receptor | Writer": {
+    "n": 33,
+    "accuracy": 0.8182,
+    "pair_type": "cross"
    },
    "Family B G protein-coupled receptor | Family B G protein-coupled receptor": {
     "n": 50,
-    "accuracy": 0.8
+    "accuracy": 0.8,
+    "pair_type": "same"
    },
    "Family C G protein-coupled receptor | Family C G protein-coupled receptor": {
     "n": 85,
-    "accuracy": 0.8824
+    "accuracy": 0.8824,
+    "pair_type": "same"
    },
    "Fatty acid binding protein family | Fatty acid binding protein family": {
     "n": 62,
-    "accuracy": 0.8065
+    "accuracy": 0.8065,
+    "pair_type": "same"
+   },
+   "Group translocator | Transferase": {
+    "n": 30,
+    "accuracy": 0.7,
+    "pair_type": "cross"
    },
    "Hydrolase | Hydrolase": {
     "n": 600,
-    "accuracy": 0.7667
+    "accuracy": 0.7667,
+    "pair_type": "same"
    },
    "Hydrolase | Kinase": {
-    "n": 77,
-    "accuracy": 0.5455
+    "n": 171,
+    "accuracy": 0.5848,
+    "pair_type": "cross"
+   },
+   "Hydrolase | Lyase": {
+    "n": 38,
+    "accuracy": 0.7632,
+    "pair_type": "cross"
    },
    "Hydrolase | Oxidoreductase": {
-    "n": 44,
-    "accuracy": 0.7273
+    "n": 83,
+    "accuracy": 0.7229,
+    "pair_type": "cross"
    },
    "Hydrolase | Protease": {
-    "n": 64,
-    "accuracy": 0.8281
+    "n": 114,
+    "accuracy": 0.807,
+    "pair_type": "cross"
    },
    "Isomerase | Isomerase": {
     "n": 39,
-    "accuracy": 0.8205
+    "accuracy": 0.8205,
+    "pair_type": "same"
    },
    "Isomerase | Kinase": {
-    "n": 30,
-    "accuracy": 0.1667
+    "n": 56,
+    "accuracy": 0.2143,
+    "pair_type": "cross"
    },
    "Kinase | Kinase": {
     "n": 4979,
-    "accuracy": 0.7329
+    "accuracy": 0.7329,
+    "pair_type": "same"
+   },
+   "Kinase | Lyase": {
+    "n": 32,
+    "accuracy": 0.5,
+    "pair_type": "cross"
    },
    "Kinase | Oxidoreductase": {
-    "n": 74,
-    "accuracy": 0.7297
+    "n": 140,
+    "accuracy": 0.7286,
+    "pair_type": "cross"
+   },
+   "Kinase | Primary active transporter": {
+    "n": 31,
+    "accuracy": 0.871,
+    "pair_type": "cross"
+   },
+   "Kinase | Protease": {
+    "n": 38,
+    "accuracy": 0.7895,
+    "pair_type": "cross"
+   },
+   "Kinase | Reader": {
+    "n": 64,
+    "accuracy": 0.8594,
+    "pair_type": "cross"
    },
    "Kinase | Transferase": {
-    "n": 785,
-    "accuracy": 0.758
+    "n": 1544,
+    "accuracy": 0.7429,
+    "pair_type": "cross"
    },
    "Kinase | Voltage-gated ion channel": {
-    "n": 163,
-    "accuracy": 0.9448
+    "n": 301,
+    "accuracy": 0.9402,
+    "pair_type": "cross"
    },
    "Ligand-gated ion channel | Ligand-gated ion channel": {
     "n": 250,
-    "accuracy": 0.688
+    "accuracy": 0.688,
+    "pair_type": "same"
    },
    "Lyase | Lyase": {
     "n": 2792,
-    "accuracy": 0.7701
+    "accuracy": 0.7701,
+    "pair_type": "same"
+   },
+   "Lyase | Protease": {
+    "n": 30,
+    "accuracy": 0.7,
+    "pair_type": "cross"
    },
    "Nuclear receptor | Nuclear receptor": {
     "n": 1601,
-    "accuracy": 0.8089
+    "accuracy": 0.8089,
+    "pair_type": "same"
+   },
+   "Nuclear receptor | Voltage-gated ion channel": {
+    "n": 34,
+    "accuracy": 0.8235,
+    "pair_type": "cross"
    },
    "Other ion channel | Other ion channel": {
     "n": 112,
-    "accuracy": 0.8929
+    "accuracy": 0.8929,
+    "pair_type": "same"
    },
    "Oxidoreductase | Oxidoreductase": {
     "n": 1137,
-    "accuracy": 0.7863
+    "accuracy": 0.7863,
+    "pair_type": "same"
+   },
+   "Oxidoreductase | Protease": {
+    "n": 31,
+    "accuracy": 0.7419,
+    "pair_type": "cross"
+   },
+   "Oxidoreductase | Voltage-gated ion channel": {
+    "n": 54,
+    "accuracy": 0.7963,
+    "pair_type": "cross"
    },
    "Phosphatase | Phosphatase": {
     "n": 575,
-    "accuracy": 0.7409
+    "accuracy": 0.7409,
+    "pair_type": "same"
    },
    "Phosphodiesterase | Phosphodiesterase": {
     "n": 938,
-    "accuracy": 0.7953
+    "accuracy": 0.7953,
+    "pair_type": "same"
+   },
+   "Phosphodiesterase | Voltage-gated ion channel": {
+    "n": 31,
+    "accuracy": 0.9355,
+    "pair_type": "cross"
    },
    "Primary active transporter | Primary active transporter": {
     "n": 169,
-    "accuracy": 0.7337
-   },
-   "Electrochemical transporter | Protease": {
-    "n": 31,
-    "accuracy": 0.4839
+    "accuracy": 0.7337,
+    "pair_type": "same"
    },
    "Protease | Protease": {
     "n": 3889,
-    "accuracy": 0.8141
+    "accuracy": 0.8141,
+    "pair_type": "same"
    },
    "Protease | Voltage-gated ion channel": {
-    "n": 34,
-    "accuracy": 0.9118
-   },
-   "Kinase | Reader": {
-    "n": 35,
-    "accuracy": 0.8857
+    "n": 72,
+    "accuracy": 0.9028,
+    "pair_type": "cross"
    },
    "Reader | Reader": {
     "n": 897,
-    "accuracy": 0.8317
+    "accuracy": 0.8317,
+    "pair_type": "same"
    },
    "Toll-like and Il-1 receptors | Toll-like and Il-1 receptors": {
     "n": 922,
-    "accuracy": 0.9382
+    "accuracy": 0.9382,
+    "pair_type": "same"
    },
    "Transferase | Transferase": {
     "n": 1993,
-    "accuracy": 0.846
+    "accuracy": 0.846,
+    "pair_type": "same"
    },
    "Voltage-gated ion channel | Voltage-gated ion channel": {
     "n": 811,
-    "accuracy": 0.8064
+    "accuracy": 0.8064,
+    "pair_type": "same"
    },
    "Writer | Writer": {
     "n": 109,
-    "accuracy": 0.7982
+    "accuracy": 0.7982,
+    "pair_type": "same"
    }
   },
   "gap_strata": {
@@ -316,7 +466,8 @@
    }
   },
   "WARNING": "the figures in this block pool 8,689 cross-family with 32,738 same-family comparisons and must never be quoted. Use MEASURED_PERFORMANCE_BY_PAIR_TYPE.",
-  "family_prior_accuracy_note": "0.5308 is a pooled artefact: the family prior is meaningless inside one family. Per arm it is 0.6574 cross and 0.4972 same."
+  "family_prior_accuracy_note": "0.5308 is a pooled artefact: the family prior is meaningless inside one family. Per arm it is 0.6574 cross and 0.4972 same.",
+  "by_family_pair_note": "unordered pairings, every held-out comparison counted once. Builds before 21 Sep 2026 grouped on the ordered pair and kept the first orientation, which reported about half of each pairing; xfam_v1 MANIFEST and the preprint table built from it carry those halved counts."
  },
  "environment": {
   "python": "3.10.15",

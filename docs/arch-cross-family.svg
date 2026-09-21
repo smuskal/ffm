@@ -3,7 +3,7 @@
   <text x="590.0" y="40" text-anchor="middle" font-size="25" font-weight="700" fill="#17181c">
     Which of two targets does this compound prefer?</text>
   <text x="590.0" y="68" text-anchor="middle" font-size="16" fill="#5b6570">
-    The two targets come from different protein families</text>
+    The two targets may come from different protein families or from the same one</text>
 
   <text x="133" y="134" text-anchor="middle" font-size="15" font-weight="700"
         fill="#1d6f42">Target A</text>
