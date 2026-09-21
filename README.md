@@ -406,8 +406,8 @@ one works** by checking its forest against the checksum in its
 own manifest and replaying the reference predictions that ship inside it. If they
 do not reproduce to 1e-6 the install fails rather than reporting success.
 
-Hardware: the target-preference forest is **0.09 GB on disk** and about **1.0 GB
-resident**, loading in under four seconds, so an 8 GB laptop is comfortable. The
+Hardware: the target-preference forest is **0.42 GB on disk** and about **3.4 GB
+resident**, loading in about five seconds, so an 8 GB laptop is comfortable. The
 preference forest is **1.18 GB on disk** and loads to rather more than that, so
 give it 16 GB. Load either **once** at process start, never per request. No GPU
 is used.
