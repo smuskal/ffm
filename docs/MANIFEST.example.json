@@ -1,0 +1,228 @@
+{
+ "name": "familyfm_xfam_selectivity",
+ "layout": "SLS, cross family",
+ "question": "one ligand, two targets from different families: which target the compound prefers",
+ "feature_order": "[ sequence A 480 | ligand 1038 | sequence B 480 ] = 1998",
+ "source": "ChEMBL 37",
+ "training": {
+  "pairs_file": "data/pairs/all.csv",
+  "fit_comparisons": 81199,
+  "rows_after_swap": 162398,
+  "label_balance": 0.5,
+  "fit_ligands": 20393,
+  "targets": 1877,
+  "fit_seconds": 37
+ },
+ "split_basis": "compound-disjoint by InChIKey, blake2b, 10% held out",
+ "hyperparameters": {
+  "n_estimators": 300,
+  "min_samples_leaf": 8,
+  "max_features": "sqrt",
+  "random_state": 0
+ },
+ "MEASURED_PERFORMANCE": {
+  "held_out_comparisons": 8689,
+  "held_out_ligands": 2195,
+  "accuracy": 0.7496,
+  "strength_cumulative": {
+   "0.50": {
+    "coverage": 1.0,
+    "accuracy": 0.7496,
+    "n": 8689
+   },
+   "0.60": {
+    "coverage": 0.7435,
+    "accuracy": 0.8146,
+    "n": 6460
+   },
+   "0.70": {
+    "coverage": 0.5203,
+    "accuracy": 0.8772,
+    "n": 4521
+   },
+   "0.80": {
+    "coverage": 0.359,
+    "accuracy": 0.9327,
+    "n": 3119
+   },
+   "0.90": {
+    "coverage": 0.2214,
+    "accuracy": 0.9657,
+    "n": 1924
+   }
+  },
+  "by_endpoint": {
+   "EC50": {
+    "n": 114,
+    "accuracy": 0.693
+   },
+   "IC50": {
+    "n": 6577,
+    "accuracy": 0.7759
+   },
+   "Kd": {
+    "n": 558,
+    "accuracy": 0.5878
+   },
+   "Ki": {
+    "n": 1440,
+    "accuracy": 0.6965
+   }
+  },
+  "by_family_pair": {
+   "Cytochrome P450 | Electrochemical transporter": {
+    "n": 48,
+    "accuracy": 0.9167
+   },
+   "Cytochrome P450 | Eraser": {
+    "n": 33,
+    "accuracy": 0.7576
+   },
+   "Cytochrome P450 | Family A G protein-coupled receptor": {
+    "n": 175,
+    "accuracy": 0.7943
+   },
+   "Cytochrome P450 | Kinase": {
+    "n": 278,
+    "accuracy": 0.8993
+   },
+   "Cytochrome P450 | Nuclear receptor": {
+    "n": 33,
+    "accuracy": 0.8788
+   },
+   "Cytochrome P450 | Oxidoreductase": {
+    "n": 105,
+    "accuracy": 0.8857
+   },
+   "Cytochrome P450 | Primary active transporter": {
+    "n": 32,
+    "accuracy": 0.8438
+   },
+   "Cytochrome P450 | Protease": {
+    "n": 48,
+    "accuracy": 0.8125
+   },
+   "Cytochrome P450 | Transferase": {
+    "n": 44,
+    "accuracy": 0.9318
+   },
+   "Cytochrome P450 | Voltage-gated ion channel": {
+    "n": 121,
+    "accuracy": 0.7438
+   },
+   "Electrochemical transporter | Family A G protein-coupled receptor": {
+    "n": 531,
+    "accuracy": 0.6554
+   },
+   "Electrochemical transporter | Primary active transporter": {
+    "n": 59,
+    "accuracy": 0.5932
+   },
+   "Electrochemical transporter | Protease": {
+    "n": 36,
+    "accuracy": 0.6389
+   },
+   "Electrochemical transporter | Voltage-gated ion channel": {
+    "n": 49,
+    "accuracy": 0.8571
+   },
+   "Eraser | Kinase": {
+    "n": 121,
+    "accuracy": 0.7438
+   },
+   "Eraser | Oxidoreductase": {
+    "n": 73,
+    "accuracy": 0.7945
+   },
+   "Eraser | Reader": {
+    "n": 31,
+    "accuracy": 0.5806
+   },
+   "Eraser | Transferase": {
+    "n": 42,
+    "accuracy": 0.7857
+   },
+   "Family A G protein-coupled receptor | Kinase": {
+    "n": 74,
+    "accuracy": 0.7027
+   },
+   "Family A G protein-coupled receptor | Ligand-gated ion channel": {
+    "n": 67,
+    "accuracy": 0.6119
+   },
+   "Family A G protein-coupled receptor | Primary active transporter": {
+    "n": 35,
+    "accuracy": 0.8571
+   },
+   "Family A G protein-coupled receptor | Voltage-gated ion channel": {
+    "n": 180,
+    "accuracy": 0.8778
+   },
+   "Hydrolase | Kinase": {
+    "n": 70,
+    "accuracy": 0.7
+   },
+   "Hydrolase | Oxidoreductase": {
+    "n": 41,
+    "accuracy": 0.561
+   },
+   "Hydrolase | Protease": {
+    "n": 50,
+    "accuracy": 0.82
+   },
+   "Isomerase | Kinase": {
+    "n": 34,
+    "accuracy": 0.2353
+   },
+   "Kinase | Oxidoreductase": {
+    "n": 67,
+    "accuracy": 0.6119
+   },
+   "Kinase | Reader": {
+    "n": 32,
+    "accuracy": 0.8438
+   },
+   "Kinase | Transferase": {
+    "n": 775,
+    "accuracy": 0.7484
+   },
+   "Kinase | Voltage-gated ion channel": {
+    "n": 144,
+    "accuracy": 0.9306
+   },
+   "Family A G protein-coupled receptor | Oxidoreductase": {
+    "n": 43,
+    "accuracy": 0.814
+   },
+   "Protease | Voltage-gated ion channel": {
+    "n": 33,
+    "accuracy": 0.9394
+   }
+  },
+  "gap_strata": {
+   "under 0.5 log": {
+    "n": 2283,
+    "accuracy": 0.5725
+   },
+   "0.5 to 1 log": {
+    "n": 1766,
+    "accuracy": 0.7005
+   },
+   "1 to 2 logs": {
+    "n": 2359,
+    "accuracy": 0.7974
+   },
+   "over 2 logs": {
+    "n": 2281,
+    "accuracy": 0.9154
+   }
+  }
+ },
+ "environment": {
+  "python": "3.10.15",
+  "numpy": "2.2.6",
+  "sklearn": "1.7.2"
+ },
+ "model_sha256": "e909978f10a6e9c528d71d0e3b2cc4ff33267fddf3bd6cdb856d2f2fb16e46bc",
+ "targets_servable": 1879
+}

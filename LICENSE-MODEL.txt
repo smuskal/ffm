@@ -1,0 +1,40 @@
+Family Foundation Model - model weights license
+===============================================
+
+The WEIGHTS distributed with this project (familyfm_selectivity.joblib and the
+sequence vectors, index and manifest that ship beside it) are licensed under
+
+    Creative Commons Attribution-ShareAlike 4.0 International
+    (CC BY-SA 4.0)   https://creativecommons.org/licenses/by-sa/4.0/
+
+WHY SHARE-ALIKE, WHEN THE CODE IS APACHE 2.0
+--------------------------------------------
+This model is trained on ChEMBL 37 and on nothing else. ChEMBL is released by
+the European Bioinformatics Institute under Creative Commons
+Attribution-ShareAlike 3.0 Unported. A set of forest weights fitted on that data
+is a derived work of it, so the weights carry ChEMBL's attribution and
+share-alike conditions forward rather than dropping them. CC BY-SA 4.0 is the
+current version of the same license and is one-way compatible with 3.0.
+
+The training and inference CODE in this repository is separate and is Apache
+2.0. Using the code with your own data puts no obligation on you from this file.
+
+WHAT THIS MEANS IN PRACTICE
+---------------------------
+You may use the weights commercially, redistribute them, and build on them.
+If you distribute the weights or a model derived from them, you must:
+
+  * credit ChEMBL and this project, and
+  * release your derived weights under CC BY-SA 4.0 or a compatible license.
+
+CITE
+----
+  ChEMBL: Zdrazil, B. et al. The ChEMBL Database in 2023. Nucleic Acids Res.
+  Family Foundation Model, Eidogen-Sertanty, Inc., 2026.
+  https://familyfoundationmodel.com
+
+A NOTE ON THE SIBLING MODELS
+----------------------------
+The Kinase Foundation Model ships its weights under research-and-evaluation-only
+terms, because it is trained on a commercial database. This model is not, which
+is why its weights can be distributed openly.
