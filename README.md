@@ -327,11 +327,23 @@ describes those proteins rather than the family.
 | Phosphatase | 575 | 0.74 | 40 |
 | Ligand-gated ion channel | 250 | 0.69 | 31 |
 
-**Kinase is the largest and the hardest of these, and that is a finding rather
-than a shortfall.** Kinases resemble one another more than members of most
-families do, so telling two of them apart for one compound is the harder
-question, and it is asked here on more held-out comparisons and more proteins
-than for any other family.
+**Kinase carries the most of this work and reads lowest, and that is the
+question being hard rather than the model falling short.** Kinases resemble one
+another more than members of most families do, so telling two of them apart for
+one compound is the harder question, and it is asked here on more held-out
+comparisons and more proteins than for any other family.
+
+**For two kinases there is a deeper instrument: the
+[Kinase Foundation Model](https://kinasefoundationmodel.com/), which answers
+[this same question within the kinome](https://kinasefoundationmodel.com/rank-selectivity.html).**
+It is built on data assembled for kinases alone rather than on one public
+release, so it sees far more of the family than a roster-wide model can. Its
+headline is measured on its own holdout, under a different split and a different
+test-set composition, so the two figures are not a like-for-like comparison and
+neither number should be read as beating the other. Use it when both targets are
+kinases; use this model when the comparison leaves the family. The same applies
+to G protein-coupled receptors and the
+[GPCR Foundation Model](https://gpcrfoundationmodel.com/).
 
 These 13 families carry within-family data but fewer than 200 held-out
 comparisons, so they are marked rather than scored and no accuracy is published
@@ -665,7 +677,7 @@ commercial database. This one is not, which is why it can be downloaded openly.
 ## Citing
 
 > Family Foundation Model, Eidogen-Sertanty, Inc., 2026. Model release
-> 13 September 2026. Trained on ChEMBL 37.
+> 21 September 2026. Trained on ChEMBL 37.
 > https://familyfoundationmodel.com
 
 Cite ChEMBL alongside it.
