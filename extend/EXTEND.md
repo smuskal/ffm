@@ -61,6 +61,11 @@ The tool forms the pairs for you. For compound preference it pairs the compounds
 measured on each target; for target preference it pairs the targets each compound
 was measured against. The same file builds either model.
 
+Pairs form only within one endpoint, as every released comparison does: a Ki is
+paired with a Ki and never ranked against an IC50. The endpoint is read from
+`assay_measure` (or `endpoint`). A file without that column is taken to be a
+single endpoint, and the run says so.
+
 A measurement is only usable if something else shares its group: another compound
 on the same target for compound preference, another target for the same compound
 for target preference. The run reports how many fell out, because a large file can
@@ -78,8 +83,10 @@ be almost entirely unpairable for one of the two layouts.
 
 The released target preference model measures two kinds of comparison
 separately, two targets from different families and two different targets from
-one family. Keep the two apart when you measure your own extension, as the
-released figures do, and quote each on its own held-out comparisons.
+one family. The tool keeps them apart too: a target preference holdout is scored
+across families, within one family, and, for a target added by sequence with no
+`family` given, on its own, and never as one pooled number. Quote each on its
+own held-out comparisons.
 
 Replace any `accession` with a `sequence` column to add a target off the roster.
 `sequence_a` and `sequence_b` work the same way for target preference, and you can
@@ -120,7 +127,7 @@ templates.
 | `extend_sls_comparisons.csv` | paired | roster accessions |
 | `extend_sls_new_target_TEMPLATE.csv` | paired | a new target against roster accessions |
 | `breadth_reference_lsl.csv` | paired | 1,500 held-out comparisons over 967 targets |
-| `breadth_reference_sls.csv` | paired | 1,200 held-out comparisons over 1,024 target pairs |
+| `breadth_reference_sls.csv` | paired | 2,400 held-out comparisons: 1,200 across families over 1,024 target pairs and 1,200 within one family over 712 target pairs, labeled in `pair_type` |
 
 **The two TEMPLATE files carry real structures and a real UniProt sequence, and
 placeholder activity values.** The sequence is human ubiquitin carboxyl-terminal
@@ -130,7 +137,8 @@ are there to show the columns, not to report a measurement.
 
 The two breadth reference files are held-out comparisons spread across the roster.
 They are what `--sweep` uses to measure what your added trees cost on targets you
-hold no data for.
+hold no data for. Every compound in them is on the held-out side of the released
+models' split.
 
 ---
 
@@ -146,7 +154,9 @@ everywhere else. `--sweep` measures both instead of guessing.
 
 It fits once at the largest tree count and evaluates prefixes of the same trees,
 which is exact, then recommends the largest count whose loss on the breadth
-reference stays within `--max-breadth-loss`, 0.005 by default.
+reference stays within `--max-breadth-loss`, 0.005 by default. For target
+preference the breadth reference is measured across families and within one
+family separately, and the recommendation must stay within the limit on both.
 
 ## A measured run
 

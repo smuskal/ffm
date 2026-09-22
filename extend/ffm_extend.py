@@ -303,6 +303,15 @@ def pair_measurements(rows, kind, cap=MEASURE_CAP_DEFAULT, seed=0, log=lambda s:
             break
     tgt_key = ("accession" if any("accession" in {c.lower().strip() for c in r}
                                  for r in rows[:1]) else "sequence")
+    # ENDPOINT MATCHED, as every released comparison is: a Ki is never ranked
+    # against an IC50. Pairs form only within one endpoint when the file names
+    # one; a file with no endpoint column is taken to be a single endpoint.
+    cols0 = {c.lower().strip() for c in rows[0]} if rows else set()
+    ep_key = next((k for k in ("assay_measure", "endpoint", "standard_type",
+                               "assay_type") if k in cols0), None)
+    if ep_key is None:
+        log("  no endpoint column (assay_measure); every reading is taken to be "
+            "the same endpoint")
 
     # Collapse duplicates by MEDIAN, never by most potent: taking the best value
     # reliably selects unit errors rather than real activity.
@@ -311,7 +320,8 @@ def pair_measurements(rows, kind, cap=MEASURE_CAP_DEFAULT, seed=0, log=lambda s:
     for r in rows:
         g = {k.lower().strip(): (v or "").strip() for k, v in r.items()}
         smi, tgt, raw = g.get("smiles"), g.get(tgt_key), g.get(val_key)
-        if not (smi and tgt and raw):
+        ep = (g.get(ep_key) or "").strip() if ep_key else ""
+        if not (smi and tgt and raw) or (ep_key and not ep):
             bad += 1
             continue
         try:
@@ -319,8 +329,8 @@ def pair_measurements(rows, kind, cap=MEASURE_CAP_DEFAULT, seed=0, log=lambda s:
         except ValueError:
             bad += 1
             continue
-        cell.setdefault((tgt, smi), []).append(v)
-        rel[(tgt, smi)] = g.get("relation", "=") or "="
+        cell.setdefault((tgt, smi, ep), []).append(v)
+        rel[(tgt, smi, ep)] = g.get("relation", "=") or "="
     if bad:
         log(f"  dropped, incomplete or unparsable        {bad:,}")
     flat = {k: statistics.median(v) for k, v in cell.items()}
@@ -329,13 +339,16 @@ def pair_measurements(rows, kind, cap=MEASURE_CAP_DEFAULT, seed=0, log=lambda s:
         log(f"  duplicate measurements merged by median  {dupes:,}")
 
     groups = {}
-    for (tgt, smi), v in flat.items():
+    for (tgt, smi, ep), v in flat.items():
         key = tgt if kind == "LSL" else smi     # target for LSL, compound for SLS
-        groups.setdefault(key, []).append((smi, tgt, v))
+        groups.setdefault((key, ep), []).append((smi, tgt, v))
+    if ep_key:
+        n_ep = len({ep for (_t, _s, ep) in flat})
+        log(f"  endpoints, each paired only within itself {n_ep:,}")
 
     rng = random.Random(seed)
     out, capped = [], 0
-    for key, members in groups.items():
+    for (key, ep), members in groups.items():
         if len(members) < 2:
             continue
         pairs = list(itertools.combinations(range(len(members)), 2))
@@ -350,7 +363,9 @@ def pair_measurements(rows, kind, cap=MEASURE_CAP_DEFAULT, seed=0, log=lambda s:
             # str(): the paired path downstream reads every cell as text, exactly
             # as csv.DictReader hands it over for a hand-built file.
             row = {"pic50_a": str(va), "pic50_b": str(vb),
-                   "relation_a": rel[(ta, sa)], "relation_b": rel[(tb, sb)]}
+                   "relation_a": rel[(ta, sa, ep)], "relation_b": rel[(tb, sb, ep)]}
+            if ep_key:
+                row["assay_measure"] = ep
             if kind == "LSL":
                 row.update({"smiles_a": sa, "smiles_b": sb, tgt_key: key})
             else:
@@ -507,6 +522,26 @@ def build(usable, smis, tgts, b, emb):
         y[i] = lab
         y[n + i] = lab if tie else 1 - lab
     return X, y
+
+
+def _family_labels(t, b):
+    """Family labels of one target: the roster's for an accession, the file's
+    `family` column for a target added by sequence. Empty when unknown."""
+    kind, value, _label, family = t
+    fam = b.family_of.get(value) if kind == "acc" else family
+    if not fam or fam == "User supplied":
+        return set()
+    return {x.strip() for x in str(fam).split("|") if x.strip()}
+
+
+def pair_type(ta, tb, b):
+    """'within' one family, 'across' families, or 'unlabeled' when either
+    target has no family. The released target preference model reports the
+    first two separately and never pools them."""
+    fa, fb = _family_labels(ta, b), _family_labels(tb, b)
+    if not fa or not fb:
+        return "unlabeled"
+    return "within" if fa & fb else "across"
 
 
 def score(model, c1, usable, smis, tgts, b, emb):
@@ -694,32 +729,49 @@ def main(argv=None):
         Xh, yh, nh = design([r for r in h if not r[5]], hs, ht, b, hemb)
         base_acc, curve = sweep_curve(b.model, yours, b.c1, Xh, yh, nh, points)
         del Xh
-        bcurve, base_b = None, None
+        # The breadth check, split by pair type for target preference: across
+        # families and within one family are measured separately and never
+        # pooled, so an extension cannot trade one away for the other unseen.
+        breadth = {}                     # arm -> (released accuracy, curve)
         if a.holdout_breadth:
             hb, hbs, hbt, _x, hbe = read_csv(a.holdout_breadth, b, have_emb, a.pairs_per_group, a.seed)
             hbe = hbe or emb
-            Xb, yb, nbn = design([r for r in hb if not r[5]], hbs, hbt, b, hbe)
-            base_b, bcurve = sweep_curve(b.model, yours, b.c1, Xb, yb, nbn, points)
-            del Xb
+            rows_b = [r for r in hb if not r[5]]
+            if b.kind == "SLS":
+                arms = {k: [r for r in rows_b if pair_type(r[2], r[3], b) == k]
+                        for k in ("across", "within")}
+            else:
+                arms = {"breadth": rows_b}
+            for arm, part in arms.items():
+                if not part:
+                    continue
+                Xb, yb, nbn = design(part, hbs, hbt, b, hbe)
+                breadth[arm] = sweep_curve(b.model, yours, b.c1, Xb, yb, nbn, points)
+                del Xb
+        bcurve = breadth or None
         log(f"\nyour holdout      : {nh:,} comparisons, released model {base_acc:.4f}")
-        if bcurve is not None:
-            log(f"breadth holdout   : targets your data does not cover, "
+        for arm, (base_b, _c) in breadth.items():
+            what = {"across": "breadth, across families",
+                    "within": "breadth, within one family"}.get(arm, "breadth")
+            log(f"{what:<27}: targets your data does not cover, "
                 f"released model {base_b:.4f}")
         log("")
         hdr = f"{'--trees':>8} {'share':>7} {'yours':>9} {'gain':>8}"
-        if bcurve is not None:
-            hdr += f" {'breadth':>9} {'cost':>8}"
+        for arm in breadth:
+            hdr += f" {arm[:9]:>9} {'cost':>8}"
         log(hdr)
         rec = None
         for k in points:
             share = k / (b.model.n_estimators + k)
             line = (f"{k:>8} {share:>6.1%} {curve[k]:>9.4f} "
                     f"{curve[k]-base_acc:>+8.4f}")
-            if bcurve is not None:
-                loss = base_b - bcurve[k]
-                line += f" {bcurve[k]:>9.4f} {-loss:>+8.4f}"
-                if loss <= a.max_breadth_loss:
-                    rec = k
+            ok = True
+            for arm, (base_b, bc) in breadth.items():
+                loss = base_b - bc[k]
+                line += f" {bc[k]:>9.4f} {-loss:>+8.4f}"
+                ok = ok and loss <= a.max_breadth_loss
+            if breadth and ok:
+                rec = k
             log(line)
         if bcurve is None:
             log("\nNo recommendation: without --holdout-breadth this sweep measured "
@@ -730,7 +782,9 @@ def main(argv=None):
         else:
             chosen = rec or min(points)
             log(f"\nRecommended: {chosen} trees, the largest whose breadth loss stays "
-                f"within {a.max_breadth_loss:.3f}. Building at {chosen}.")
+                f"within {a.max_breadth_loss:.3f}"
+                + (" on every arm" if len(breadth) > 1 else "")
+                + f". Building at {chosen}.")
         log("=" * 74)
         yours.estimators_ = yours.estimators_[:chosen]
         yours.n_estimators = chosen
@@ -826,12 +880,35 @@ def main(argv=None):
         log(f"\nholdout: {a.holdout}")
         h, hs, ht, hd, hemb = read_csv(a.holdout, b, have_emb, a.pairs_per_group, a.seed)
         hemb = hemb or emb
-        before, n = score(b.model, b.c1, h, hs, ht, b, hemb)
         c1m = int(np.where(merged.classes_ == 1)[0][0])
-        after, _ = score(merged, c1m, h, hs, ht, b, hemb)
-        log(f"  {n:,} scorable comparisons")
-        log(f"  released model {before:.4f}")
-        log(f"  merged model   {after:.4f}   {after-before:+.4f}")
+        if b.kind == "SLS":
+            # NEVER POOLED. Within-family and across-family comparisons are
+            # different questions with different baselines, so each is scored
+            # on its own, as the released figures are.
+            before = after = None
+            for kind_ in ("across", "within", "unlabeled"):
+                part = [r for r in h if pair_type(r[2], r[3], b) == kind_]
+                if not part:
+                    continue
+                b0, n0 = score(b.model, b.c1, part, hs, ht, b, hemb)
+                a0, _ = score(merged, c1m, part, hs, ht, b, hemb)
+                if not n0:
+                    continue
+                label = {"across": "across families", "within": "within one family",
+                         "unlabeled": "family not given"}[kind_]
+                log(f"  {label:<18} {n0:,} scorable comparisons")
+                log(f"    released model {b0:.4f}")
+                log(f"    merged model   {a0:.4f}   {a0-b0:+.4f}")
+                if a0 < b0:
+                    before, after = b0, a0
+            if before is None:
+                before = after = 0.0
+        else:
+            before, n = score(b.model, b.c1, h, hs, ht, b, hemb)
+            after, _ = score(merged, c1m, h, hs, ht, b, hemb)
+            log(f"  {n:,} scorable comparisons")
+            log(f"  released model {before:.4f}")
+            log(f"  merged model   {after:.4f}   {after-before:+.4f}")
         if after < before:
             log("  NOTE: your trees vote on every prediction, including targets you hold "
                 "no data for. Try fewer trees, or broader data.")
