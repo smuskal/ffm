@@ -278,7 +278,8 @@ the same thing.
 ![Across families, accuracy rises from 0.75 answering
 everything to 0.97 at a strength cutoff of 0.90, while
 the share of comparisons still answered falls from 100 percent to
-21 percent.](docs/strength-tradeoff.svg)
+21 percent. Vertical bars give the range across family pairings at each
+cutoff.](docs/strength-tradeoff.svg)
 
 ![Within one family, accuracy rises from 0.78 answering
 everything to 0.98 at a strength cutoff of 0.90, while
@@ -286,14 +287,24 @@ the share of comparisons still answered falls from 100 percent to
 21 percent. Vertical bars give the range across families at each
 cutoff.](docs/strength-tradeoff-same.svg)
 
-**Only the second plot carries vertical bars, and that is deliberate.** A
-within-family comparison sits inside one family, so the spread across families
-is a property of that curve: the bars give the range over the 17 families
-carrying 200 or more held-out comparisons, **0.69 to 0.94 with no gate and 0.93
-to 1.00 at strength 0.90**, which is the same range the paper's Figure 2 shows.
-The curve is a position within that spread rather than any one family's result.
-The first plot has no bars because an across-family comparison belongs to two
-families at once and cannot be filed under one.
+**Both plots carry vertical bars, each over its own unit**, and each figure
+says which inside the plot. A headline is an average over a spread, and the
+spread is what a reader needs.
+
+* **Across families**, the unit is the family pairing: such a comparison
+  belongs to two families at once but to exactly one pairing. The bars give the
+  range over the 17 pairings carrying 100 or more held-out comparisons, **0.58
+  to 0.94 with no gate**. A pairing counts at a gate only where 20 or more of
+  its comparisons survive it, and fewer do as the gate rises, so the upper bars
+  rest on fewer pairings: 9 at strength 0.90.
+* **Within one family**, the unit is the family. The bars give the range over
+  the 17 families carrying 200 or more held-out comparisons, **0.69 to 0.94
+  with no gate and 0.93 to 1.00 at strength 0.90**, the same range the paper's
+  Figure 2 shows. All 17 hold at every gate.
+
+The compound plot above carries no bars: that model is anchored at one target,
+so its per-family spread is a different quantity, shown with confidence
+intervals in [its own per-family table](#every-family-with-held-out-comparisons).
 
 Strength is max(p, 1 - p) of the returned probability p, so it runs 0.5 to 1.0.
 
