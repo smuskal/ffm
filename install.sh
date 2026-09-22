@@ -8,8 +8,8 @@
 # and nothing else would notice.
 #
 # Set FFM_MODELS to install only one of them:
-#   FFM_MODELS=selectivity ./install.sh     the smaller forest, 0.09 GB
-#   FFM_MODELS=preference  ./install.sh     the larger forest, 1.18 GB
+#   FFM_MODELS=selectivity ./install.sh     the target comparator, 0.42 GB
+#   FFM_MODELS=preference  ./install.sh     the compound comparator, 1.18 GB
 set -euo pipefail
 
 HERE="$(cd "$(dirname "$0")" && pwd)"
