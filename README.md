@@ -113,7 +113,13 @@ during fitting.
 ![Accuracy rises from 0.71 answering everything to
 0.98 at a strength cutoff of 0.90, while the share of
 comparisons still answered falls from 100 percent to
-1.2%.](docs/strength-tradeoff-preference.svg)
+1.2%. Vertical bars give the range across families at each
+cutoff.](docs/strength-tradeoff-preference.svg)
+
+The vertical bars give the range across the families carrying held-out
+comparisons at each gate: **0.59 to 0.80 over 31 families with no gate**. Fewer
+families reach the higher gates, so the upper bars rest on fewer of them, 8 at
+strength 0.90.
 
 | strength at or above | comparisons kept | share of the held-out set | accuracy |
 |---|---|---|---|
@@ -278,7 +284,15 @@ the share of comparisons still answered falls from 100 percent to
 ![Within one family, accuracy rises from 0.78 answering
 everything to 0.98 at a strength cutoff of 0.90, while
 the share of comparisons still answered falls from 100 percent to
-21 percent.](docs/strength-tradeoff-same.svg)
+21 percent. Vertical bars give the range across families at each
+cutoff.](docs/strength-tradeoff-same.svg)
+
+The vertical bars on the within-family plot give the range across the 17
+families carrying 200 or more held-out comparisons: **0.69 to 0.94 with no gate
+and 0.93 to 1.00 at strength 0.90**, so the curve is a position within a spread
+rather than any one family's result. The across-family plot carries no bars,
+because such a comparison belongs to two families at once and cannot be filed
+under one.
 
 Strength is max(p, 1 - p) of the returned probability p, so it runs 0.5 to 1.0.
 
